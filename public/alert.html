@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .alert {
+            padding: 20px;
+            background-color: #f44336;
+            color: white;
+        }
+
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .closebtn:hover {
+            color: black;
+        }
+
+        .quadrat {
+            -webkit-animation: NAME-YOUR-ANIMATION 1s infinite;
+            -moz-animation: NAME-YOUR-ANIMATION 1s infinite;
+            -o-animation: NAME-YOUR-ANIMATION 1s infinite;
+            animation: NAME-YOUR-ANIMATION 1s infinite;
+        }
+
+        @-webkit-keyframes NAME-YOUR-ANIMATION {
+            0%, 49% {
+                background-color: rgb(117, 209, 63);
+            }
+            50%, 100% {
+                background-color: #e50000;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="alert quadrat">
+    <h1 style="text-align:center">Alert Messages  <br> You have opened multiple Program, Please close all opened Window</h1>
+</div>
+
+</body>
+</html>

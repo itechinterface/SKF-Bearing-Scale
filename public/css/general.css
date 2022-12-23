@@ -1,0 +1,47 @@
+@font-face {
+    font-family: 'DSEG7Classic';
+    src: url('../images/DSEG7Classic-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+#grad1 {
+    height: 200px;
+    background: #AC58FA; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left top, #5882FA, #AC58FA); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, #5882FA, #AC58FA); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, #5882FA, #AC58FA); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right,#5882FA, #AC58FA); /* Standard syntax (must be last) */
+}
+
+#grad {
+    background: #AC58FA; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left, #A9A9F5 , #58ACFA); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #A9A9F5, #58ACFA); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #A9A9F5, #58ACFA); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #A9A9F5 , #58ACFA); /* Standard syntax */
+}
+
+#grad2 {
+    background: #A9BCF5; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left top, #58ACFA, #E3CEF6); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, #58ACFA, #E3CEF6); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, #58ACFA,#E3CEF6); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, #58ACFA, #E3CEF6);
+}
+
+#slides_control > div{
+    height: 200px;
+}
+img{
+    margin:auto;
+    width: 400px;
+}
+#slides_control {
+    position:absolute;
+    width: 400px;
+    left:50%;
+    top:20px;
+    margin-left:-200px;
+}

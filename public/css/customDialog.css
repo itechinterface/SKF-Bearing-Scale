@@ -1,0 +1,19 @@
+/*md-dialog .md-button{*/
+    /*background-color: #F24029; !important;*/
+    /*color: whitesmoke;*/
+/*}*/
+
+md-dialog .md-dialog-content{
+    width: 600px;
+    height: 300px;
+}
+
+md-dialog .md-prompt-input-container{
+    font-size: xx-large;
+    margin-top: 50px;
+}
+
+md-dialog .md-dialog-content{
+    font-size: 25px;
+    margin-top: 50px;
+}

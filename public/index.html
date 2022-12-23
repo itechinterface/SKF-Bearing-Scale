@@ -1,0 +1,65 @@
+<!doctype html>
+<html ng-app="starter">
+<head>
+
+    <!--<meta name="viewport" content="width=device-width, initial-scale=0">-->
+    <meta charset="utf-8">
+    <title>ACCENT INSTRUMENTS | DASHBOARD</title>
+
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+
+    <link rel="stylesheet" href="css/style.css">
+    <!--<link rel="stylesheet" href="css/jquery-ui.css">-->
+    <link rel="stylesheet" href="css/angular-material.min.css">
+    <link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css"/>
+    <link rel="stylesheet" href="css/customDialog.css">
+
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/tether.min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
+
+    <script src="lib/angular.min.js"></script><!-- load angular -->
+    <script src="lib/ui-bootstrap-tpls.min.js"></script>
+    <script src="lib/socket.io-1.4.5.js"></script>
+    <script src="lib/angular-route.js"></script>
+    <script type="text/javascript" src="lib/sha.js"></script>
+    <script src="lib/totp.js"></script>
+
+    <script src="lib/angular-animate.min.js"></script>
+    <script src="lib/angular-aria.min.js"></script>
+    <script src="lib/angular-messages.min.js"></script>
+    <script src="lib/angular-material.min.js"></script>
+    <script src="lib/sysend.js"></script>
+    <!--<link rel="stylesheet" href="css/barcode.css" type="text/css"/>-->
+    <!--<script type="text/javascript" src="lib/barcodeGenerator.js"></script>-->
+
+    <!--<script src="ckeditor/ckeditor.js"></script>-->
+    <!--<script src="lib/ng-ckeditor.min.js"></script>-->
+    <!--<script src="lib/angular-base64.min.js"></script>-->
+
+    <!--<link href="css/ngPrint.min.css">-->
+    <!--<script src="lib/ngPrint.min.js"></script>-->
+    <!--<script src="lib/html2canvas.js"></script>-->
+
+    <script src="js/app.js"></script>
+    <script src="js/controllers.js"></script>
+
+    <!--<link href="../dist/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />-->
+    <link href="../dist/css/skins/_all-skins.css" rel="stylesheet" type="text/css" />
+
+    <script>
+        sysend.on('notification', function() {
+            sysend.broadcast('multiple');
+        });
+        sysend.on('multiple', function() {
+            //alert('multiple pages');
+            window.location = "alert.html"
+        });
+        sysend.broadcast('notification');
+    </script>
+
+</head>
+
+<body class="skin-white" ng-view required keyshortcut onselectstart="return false;">
+</body>
+</html>
