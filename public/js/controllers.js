@@ -1,7 +1,7 @@
 angular.module('starter.controllers', [])
 
     .factory('socket', function ($rootScope) {
-        var socket = io.connect('http://localhost:8080');
+        var socket = io.connect('http://localhost:8081');
         return {
             on: function (eventName, callback) {
                 socket.on(eventName, function () {
@@ -65,7 +65,7 @@ angular.module('starter.controllers', [])
                 $timeout.cancel(timeoutHandler);
                 timeoutHandler = $timeout(function () {
                   clickAndHoldFn(scope, {$event: event})
-                }, 4000)
+                }, 10000)
             });
             element.on('mouseup', function (event) {
                 $timeout.cancel(timeoutHandler);
@@ -85,6 +85,69 @@ angular.module('starter.controllers', [])
           }
         }
       })
+
+      .directive('onClickHold', function ($parse, $timeout) {
+        return {
+          link: function (scope, element, attrs) {
+            var clickAndHoldFn = $parse(attrs.onClickHold);
+            var doNotTriggerClick;
+            var timeoutHandler;
+            element.on('mousedown', function () {
+                $timeout.cancel(timeoutHandler);
+                timeoutHandler = $timeout(function () {
+                  clickAndHoldFn(scope, {$event: event})
+                }, 2000)
+            });
+            element.on('mouseup', function (event) {
+                $timeout.cancel(timeoutHandler);
+            });
+      
+            if (attrs.onClick) {
+                var clickFn = $parse(attrs.onClick);
+                element.on('click', function (event) {
+                    if (doNotTriggerClick) {
+                        doNotTriggerClick = false;
+                        return;
+                    }
+                    clickFn(scope, {$event: event});
+                    scope.$apply();
+                });
+            }
+          }
+        }
+      })
+
+      .directive('onClickResetHold', function ($parse, $timeout) {
+        return {
+          link: function (scope, element, attrs) {
+            var clickAndHoldFn = $parse(attrs.onClickResetHold);
+            var doNotTriggerClick;
+            var timeoutHandler;
+            element.on('mousedown', function () {
+                $timeout.cancel(timeoutHandler);
+                timeoutHandler = $timeout(function () {
+                  clickAndHoldFn(scope, {$event: event})
+                }, 20000)
+            });
+            element.on('mouseup', function (event) {
+                $timeout.cancel(timeoutHandler);
+            });
+      
+            if (attrs.onClick) {
+                var clickFn = $parse(attrs.onClick);
+                element.on('click', function (event) {
+                    if (doNotTriggerClick) {
+                        doNotTriggerClick = false;
+                        return;
+                    }
+                    clickFn(scope, {$event: event});
+                    scope.$apply();
+                });
+            }
+          }
+        }
+      })
+      
 
     .directive('keyshortcut', ['$rootScope','socket',function(rootScope,socket) {
             return {
@@ -130,6 +193,7 @@ angular.module('starter.controllers', [])
 
         $scope.Model.showAdminView = false;
         $scope.Model.status = 1;
+        $scope.Model.pcurl = "";
         
 
         $rootScope.$on('onWeightChange', function (evt,data) {
@@ -152,6 +216,7 @@ angular.module('starter.controllers', [])
             $scope.Model.BeforeWt = "";
             $scope.Model.AfterWt = "";
             $scope.Model.ResultWt = "";
+            $scope.getBatchRecords();
         }
 
         
@@ -161,6 +226,20 @@ angular.module('starter.controllers', [])
             if(url.toString().indexOf('localhost') == -1)
                 $scope.Model.showAdminView = true;
 
+            $http({
+                url: '/api/getip',
+                method: "POST"
+            })
+            .then(function(response) {
+                if(response.data.length > 0)
+                {
+                    $scope.Model.pcurl = response.data[0];
+                    //alert(response.data[0]);
+                }
+                //console.log(response);
+            },
+            function(response) { // optional
+            });    
             $scope.reset();
             $scope.getBatchRecords();
         });
@@ -201,20 +280,16 @@ angular.module('starter.controllers', [])
                 data: obj
             })
             .then(function(response) {
-                
                 if(response.data.data.length > 0)
                 {
                     $scope.Model.BeforeWt = response.data.data[0].BEFORE_WEIGHT;
                     $scope.Model.AfterWt = response.data.data[0].AFTER_WEIGHT;
                     $scope.Model.ResultWt = response.data.data[0].RESULT_WEIGHT;
                 }
-                
             },
             function(response) {
 
             });
-
-
         }
 
         var i = 10;
@@ -295,6 +370,32 @@ angular.module('starter.controllers', [])
             });
         }
 
+        $scope.searchData = function(){
+            if($scope.Model.fromDt == undefined || $scope.Model.fromDt.length == 0)
+            {
+                alert("Enter From Date");
+                return;
+            }
+            if($scope.Model.toDt == undefined || $scope.Model.toDt.length == 0)
+            {
+                alert("Enter To Date");
+                return;
+            }
+
+            $http({
+                url: '/api/getBatchSearchRecords',
+                method: "POST",
+                data: {'from':$scope.Model.fromDt,'to':$scope.Model.toDt}
+            })
+            .then(function(response) {
+                $scope.Model.batchRecords = response.data.data;
+                console.log($scope.Model.batchRecords);
+            },
+            function(response) { // optional
+
+            });
+        }
+
         $scope.removeItem = function(item){
             var result = confirm("Want to delete?");
             if (result) {
@@ -313,19 +414,39 @@ angular.module('starter.controllers', [])
             
         }
         
-        $scope.duplicatePrint = function(item){
-            $http({
-                url: '/api/duplicateprint',
-                method: "POST",
-                data: {'item':JSON.stringify(item),
-                'template':JSON.stringify($scope.Model.selectedPrintTemplate)
-                }
-            })
-            .then(function(response) {
-                
-            },
-            function(response) {
+        $scope.duplicate = function(item){
+            var result = confirm("Want Duplicate Print ?");
+            if (result) {
+                $http({
+                    url: '/api/duplicateprint',
+                    method: "POST",
+                    data: {'item':JSON.stringify(item)
+                    }
+                })
+                .then(function(response) {
+                    
+                },
+                function(response) {
+    
+                });
+            }
+        }
 
-            });
+        $scope.resetData = function(){
+            var result = confirm("Want to Reset All ?");
+            if (result) {
+                $http({
+                    url: '/api/resetall',
+                    method: "POST",
+                    data: {}
+                })
+                .then(function(response) {
+                    $scope.reset();
+                    $scope.getBatchRecords();    
+                },
+                function(response) {
+    
+                });
+            }
         }
     })

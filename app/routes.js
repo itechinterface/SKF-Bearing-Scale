@@ -1,10 +1,12 @@
 module.exports = function(app,io) {
 
+	var gpio = require('rpi-gpio');
 	var exec = require('child_process').exec;
 	var fs = require('fs');
 	var serialNumber = "";
 	var sqlite3 = require('sqlite3').verbose();
 	var db;
+	var port;
 	createDb();
 
 	////////// DATABASE /////////////////////////////////
@@ -37,8 +39,34 @@ module.exports = function(app,io) {
 		}
 	});
 
+	///////// GENERAL_SETTINGS //////////////////////////
+	/*	
+		gpio.destroy();
+		gpio.reset();
+
+		gpio.on('export', function(channel) {
+					console.log('Channel set: ' + channel);
+		});
+
+		var prevValue = false;
+		gpio.on('change', function(channel, value) {
+			//console.log('Channel ' + channel + ' value is now ' + value);
+			if(value == true && prevValue == false){
+				io.sockets.emit('forceprint', true);
+				console.log("Button Push...");
+			}
+			prevValue = value;
+		});
+
+		gpio.setup(16, gpio.DIR_IN, gpio.EDGE_BOTH);
+	
+    */    
+	
+	var SerialPort = require('serialport');
+    //const Readline = SerialPort.parsers.Readline;
+
 	function getGeneralSettings() {
-		//return;
+
 		try {
 			var stats = fs.lstatSync('/dev/ttyUSB0');
 			var result = exec("echo RaspberryPi | sudo -S chmod a+rw /dev/ttyUSB0", function (error, stdout, stderr) {
@@ -58,7 +86,7 @@ module.exports = function(app,io) {
 					});
 				});
 				initPrinter();
-			});
+                        });
 		}
 		catch (err) {
 			console.log("No Weight Attached");
@@ -66,7 +94,7 @@ module.exports = function(app,io) {
 		}
 	}
 
-	var printer = undefined;
+    var printer = undefined;
 	function initPrinter() {
 
 		if(printer == undefined)
@@ -74,6 +102,8 @@ module.exports = function(app,io) {
 			try{
 				var stats = fs.lstatSync('/dev/usb');
 				if (stats.isDirectory()) {
+
+
 					var result = exec("echo RaspberryPi | sudo -S chmod a+rw /dev/usb/lp0", function (error, stdout, stderr) {
                                                 try{
 						printer = new SerialPort('/dev/usb/lp0', { baudrate: 9600});
@@ -94,51 +124,104 @@ module.exports = function(app,io) {
 		}
 	}
 
-	function PrintData(printData) {
-		var printer_ = initPrinter();
+	function Print2x2_300(weight,printData,shift_time,date_time,wn) {
+        
+			var printer_ = initPrinter();
 			if(printer_ == undefined)
 				return;
-		printer_.write(printData, function(err) {
-		});
+
+        	date_time = date_time.replace('-', '/');
+			date_time = date_time.replace('-', '/');
+
+			//ANDA/CP-OLD/SATO
+			if(isSATO)
+			{
+				printer_.write("^XA^PR4^MD24", function (err) {
+				});
+			}
+			
+			
+			//NEW-TSC
+			if(!isSATO)
+			{
+				printer_.write("^XA^PW400^LL400^LS0", function (err) {
+				});
+			}
+			
+
+			for (var i = 0; i < label_settings_2x2.length; i++) {
+
+				var item = label_settings_2x2[i];
+				if (item.Id == 1) {
+					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + weight + " kg.^FS^FS^FS", function (err) {
+					});
+				}
+				else if (item.Id == 2) {
+					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + printData.ShipperNo + "^FS^FS^FS", function (err) {
+					});
+				}
+				else if (item.Id == 3) {
+					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + wn.toString().toUpperCase() + "^FS^FS^FS", function (err) {
+					});
+				}
+				else if (item.Id == 4) {
+					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + date_time.replace('-', '/') + "^FS^FS^FS", function (err) {
+					});
+				}
+				else if (item.Id == 5) {
+					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + shift_time + "^FS^FS^FS", function (err) {
+					});
+				}
+				else if (item.Id == 6) {
+					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + printData.CountryName.toString().toUpperCase() + "^FS^FS^FS", function (err) {
+					});
+				}
+				}
+				printer_.write("^XZ", function (err) {
+				});
+			//}
 	}
 
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
 
 	// var SerialPort = require('serialport');
 	
 	///////// GENERAL_SETTINGS_END //////////////////////////
+	
 	app.use(function(req, res, next) {
 		res.header("Access-Control-Allow-Origin", "*");
 		res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 		next();
 	});
 
-	app.post('/api/getPrintTemplates',function (req,res) {
-		db.all("SELECT * FROM PrintTemplate", function(err, rows) {
-			res.json({'error':false,'data':rows});
+	app.post('/api/getip',function (req,res) {
+		res.json(getNetworkIP());
+	});
+
+	function getNetworkIP() {
+		var os = require('os');
+		var ifaces = os.networkInterfaces();
+		var addresses = [];
+
+		Object.keys(ifaces).forEach(function (ifname) {
+			var alias = 0;
+
+			ifaces[ifname].forEach(function (iface) {
+				if ('IPv4' !== iface.family || iface.internal !== false) {
+					return;
+				}
+
+				if (alias >= 1) {
+					addresses.push(iface.address);
+				} else {
+					addresses.push(iface.address);
+				}
+				++alias;
+			});
 		});
-    });
 
-	app.post('/api/updatePrintTemplate',function (req,res) {
-		var template = JSON.parse(req.body.template);
-		console.log(template);
-		var query = "Update PrintTemplate set Name = '"+template.Name+"',BALE = '"+template.BALE+"',SIZE = '"+template.SIZE+"',PCS = '"+template.PCS+"',GSM = '"+template.GSM+"',WT = '"+template.WT+"',EX1 = '"+template.EX1+"',EX2 = '"+template.EX2+"',EX3 = '"+template.EX3+"',EX4 = '"+template.EX4+"',EX5 = '"+template.EX5+"',EX6 = '"+template.EX6+"' where ID = "+template.ID;
-		var stmt = db.prepare(query);
-		stmt.run();
-		stmt.finalize();
-		res.json({'error':false,'data':[]});
-	});
-
-	app.post('/api/addbatch',function (req,res) {
-		var srno = req.body.srno;
-		var name = req.body.name;
-        var stmt = db.prepare("INSERT INTO BatchRecord('SRNO','Name','Date') VALUES (?,?,?)");
-		stmt.run(srno,name,getDate());
-		stmt.finalize();
-		res.json({'error':false,'data':[]});
-	});
+		if(!addresses.length>0)addresses.push('0.0.0.0');
+		return addresses;
+	}
 
 	app.post('/api/getBatchRecords',function (req,res) {
 		db.all("SELECT * FROM BatchData order by EX3 desc limit 50", function(err, rows) {
@@ -146,11 +229,29 @@ module.exports = function(app,io) {
 		});
     });
 
-	app.post('/api/getBatchData',function (req,res) {
-		db.all("SELECT * FROM BatchData where BatchID = "+req.body.batchid+" order by ID desc", function(err, rows) {
-			res.json({'error':false,'data':rows});
+	function getDT(date) {
+            var dd = date.getDate();
+            dd =  parseInt(dd)<10 ? '0'+dd : dd;
+            var MM = date.getMonth()+1;
+            MM =  parseInt(MM)<10 ? '0'+MM : MM;
+            var yy = date.getFullYear();
+            
+            //var sDate = yy+'-'+MM+'-'+dd;
+            var sDate = dd+'-'+MM+'-'+yy;
+            return sDate;
+        }
+	
+	app.post('/api/getBatchSearchRecords',function (req,res) {
+		var from = getDT(new Date(req.body.from));
+		from = from+" "+"00:01";
+		var to = getDT(new Date(req.body.to));
+		to = to+" "+"23:59";
+		var query = "select *  from BatchData where EX2  BETWEEN '"+from+"' and '"+to+"'";
+		console.log(query);
+		db.all(query, function(err, rows) {
+			res.json({'error':false,'data':rows});	
 		});
-    });
+	});
 
 	app.post('/api/searchbearing',function (req,res) {
 		db.all("SELECT * FROM BatchData where BEARING_TYPE = '"+req.body.BearingNo+"' and BEARING_NO = '"+req.body.SrNo+"' order by ID desc LIMIT 1", function(err, rows) {
@@ -158,11 +259,9 @@ module.exports = function(app,io) {
 		});
     });
 	
-
 	app.post('/api/addbatchdata',function (req,res) {
 		
-		console.log(req.body);
-
+		//console.log(req.body);
 		var BearingNo = req.body.BearingNo;
 		var SrNo = req.body.SrNo;
         var Username = req.body.Username;
@@ -182,7 +281,7 @@ module.exports = function(app,io) {
 				{
 					var ResultWt = (parseFloat(BeforeWt) - parseFloat(rows[0].AFTER_WEIGHT)).toFixed(3);
 					var DT = getDateTime();
-					var query = "Update BatchData set BEFORE_WEIGHT = "+BeforeWt+",BEFORE_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '"+Extra1+"',EX2 = '"+Extra2+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
+					var query = "Update BatchData set BEFORE_WEIGHT = "+BeforeWt+",BEFORE_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '',EX2 = '"+DT+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
 					var stmt = db.prepare(query);
 					console.log(query);
 					stmt.run();
@@ -193,7 +292,7 @@ module.exports = function(app,io) {
 
 					var ResultWt = (parseFloat(rows[0].BEFORE_WEIGHT) - parseFloat(AfterWt)).toFixed(3);
 					var DT = getDateTime();
-					var query = "Update BatchData set AFTER_WEIGHT = "+AfterWt+",AFTER_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '"+Extra1+"',EX2 = '"+Extra2+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
+					var query = "Update BatchData set AFTER_WEIGHT = "+AfterWt+",AFTER_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '',EX2 = '"+DT+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
 					console.log(query);
 					var stmt = db.prepare(query);
 					stmt.run();
@@ -206,7 +305,7 @@ module.exports = function(app,io) {
 				{
 					var DT = getDateTime();
 					var stmt = db.prepare("INSERT INTO BatchData('BEARING_TYPE','BEARING_NO','BEFORE_WEIGHT','BEFORE_DATETIME','EMPNAME','EMPCODE','EX1','EX2','EX3') VALUES (?,?,?,?,?,?,?,?,?)");
-					stmt.run(BearingNo,SrNo,BeforeWt,DT,Username,UserCode,Extra1,Extra2,Date.now());
+					stmt.run(BearingNo,SrNo,BeforeWt,DT,Username,UserCode,'',DT,Date.now());
 					stmt.finalize();
 					res.json({'error':false});
 				}
@@ -215,7 +314,7 @@ module.exports = function(app,io) {
 					var ResultWt = (parseFloat(BeforeWt) - parseFloat(AfterWt)).toFixed(3);
 					var DT = getDateTime();
 					var stmt = db.prepare("INSERT INTO BatchData('BEARING_TYPE','BEARING_NO','AFTER_WEIGHT','AFTER_DATETIME','RESULT_WEIGHT','RESULT_DATETIME','EMPNAME','EMPCODE','EX1','EX2','EX3') VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-					stmt.run(BearingNo,SrNo,AfterWt,DT,ResultWt,DT,Username,UserCode,Extra1,Extra2,Date.now());
+					stmt.run(BearingNo,SrNo,AfterWt,DT,ResultWt,DT,Username,UserCode,'',DT,Date.now());
 					stmt.finalize();
 					res.json({'error':false});
 				}
@@ -224,101 +323,17 @@ module.exports = function(app,io) {
 	});
 
 	app.post('/api/duplicateprint',function (req,res) {
-		
-		var template = JSON.parse(req.body.template);
-		template = JSON.parse(template);
 		var item = JSON.parse(req.body.item);
 		console.log(item);
-		console.log(template);
-		
-		var lblBALE = "^FO"+template.BALE.split(',')[0]+","+template.BALE.split(',')[1]+"^FWR^FD"+item.SrNo+"^FS^";
-		var lblSize = "^FO"+template.SIZE.split(',')[0]+","+template.SIZE.split(',')[1]+"^FWR^FD"+item.Size+"^FS^";
-		var lblPCS = "^FO"+template.PCS.split(',')[0]+","+template.PCS.split(',')[1]+"^FWR^FD"+item.PCS+"^FS^";
-		var lblGSM = "^FO"+template.GSM.split(',')[0]+","+template.GSM.split(',')[1]+"^FWR^FD"+item.GSM+"^FS^";
-		var lblWEIGHT = "^FO"+template.WT.split(',')[0]+","+template.WT.split(',')[1]+"^FWR^FD"+item.Weight+"^FS^";
-		var label = "^XA^CF0,60"+lblBALE+""+lblSize+""+lblPCS+""+lblGSM+""+lblWEIGHT+"^XZ";
-		console.log(label);
-		PrintData(label);
+		// var lblBALE = "^FO"+template.BALE.split(',')[0]+","+template.BALE.split(',')[1]+"^FWR^FD"+item.SrNo+"^FS^";
+		// var lblSize = "^FO"+template.SIZE.split(',')[0]+","+template.SIZE.split(',')[1]+"^FWR^FD"+item.Size+"^FS^";
+		// var lblPCS = "^FO"+template.PCS.split(',')[0]+","+template.PCS.split(',')[1]+"^FWR^FD"+item.PCS+"^FS^";
+		// var lblGSM = "^FO"+template.GSM.split(',')[0]+","+template.GSM.split(',')[1]+"^FWR^FD"+item.GSM+"^FS^";
+		// var lblWEIGHT = "^FO"+template.WT.split(',')[0]+","+template.WT.split(',')[1]+"^FWR^FD"+item.Weight+"^FS^";
+		// var label = "^XA^CF0,60"+lblBALE+""+lblSize+""+lblPCS+""+lblGSM+""+lblWEIGHT+"^XZ";
+		//console.log(label);
+		//PrintData(label);
 		res.json({'error':false,'data':[]});
-		
-		
-	});
-
-	app.post('/api/downloadreport',function (req,res) {
-		
-		var obj = JSON.parse(req.body.obj);
-		console.log(obj);
-
-		var newLine = "";
-		newLine = newLine.concat("SrNo.,");
-		newLine = newLine.concat("Weight,");
-		newLine = newLine.concat("DateTime,");
-		newLine = newLine.concat("SIZE,");
-		newLine = newLine.concat("PCS,");
-		newLine = newLine.concat("GSM,");
-		newLine = newLine.concat("Product,");
-		newLine = newLine.concat("Extra 1,");
-		newLine = newLine.concat("Extra 2,");
-		newLine = newLine.concat("Extra 3,");
-		newLine = newLine.concat("Extra 4,");
-		newLine = newLine.concat("Extra 5,");
-		newLine = newLine.concat("Extra 6,\n");
-		
-		db.all("SELECT * FROM BatchData where BatchID = "+obj.ID+" order by ID asc", function(err, rows) {
-			
-			for(var i=0;i<rows.length;i++)
-			{
-				var d = rows[i];
-
-				newLine = newLine.concat(d.SrNo+",");
-				newLine = newLine.concat(d.Weight.toFixed(3)+",");
-				newLine = newLine.concat(d.DateTime+",");
-				newLine = newLine.concat(d.Size+",");
-				newLine = newLine.concat(d.PCS+",");
-				newLine = newLine.concat(d.GSM+",");
-				newLine = newLine.concat(d.Product+",");
-				newLine = newLine.concat(d.EX1+",");
-				newLine = newLine.concat(d.EX2+",");
-				newLine = newLine.concat(d.EX3+",");
-				newLine = newLine.concat(d.EX4+",");
-				newLine = newLine.concat(d.EX5+",");
-				newLine = newLine.concat(d.EX6+",\n");
-			}
-			console.log(newLine);
-			fs.writeFile("/media/pi/WEIGHT-DATA/"+obj.RefNo+".csv", newLine, (err) => {
-				if (err)
-				  console.log(err);
-				console.log("ok");  
-				res.json({'error':false,'data':[]});	
-			});
-		});
-		
-		// fs.writeFile("/media/pi/WEIGHT-DATA/"+obj.RefNo+".csv", newLine, (err) => {
-		// res.json({'error':false,'data':[]});	
-		
-    });
-
-	//---------------
-	app.get('/downloadbatchdata', function(req, res){
-		var filename = req.query.filename;
-		var file = fixed_path+filename+".csv";
-		res.download(file);
-	});
-
-	app.get('/api/zero',function (req,res) {
-		if(port)
-			port.write("z");
-		res.json('');
-	});
-
-	app.get('/api/getcsv',function (req,res) {
-		var filename = req.query.filename;
-		fs.readFile(fixed_path+filename+".csv", function (err, data) {
-			var csv = data;
-			res.setHeader('Content-disposition', 'attachment; filename='+filename+'.csv');
-			res.set('Content-Type', 'text/csv');
-			res.status(200).send(csv);
-		})
 	});
 
 	io.sockets.on('connection', function (socket) {
@@ -361,8 +376,6 @@ module.exports = function(app,io) {
 		return dd+'-'+MM+'-'+yy+' '+hh+':'+mm;
 	}
 
-	
-
 	app.post('/api/removeitem',function (req,res) {
 		
 		var id = req.body.id;
@@ -374,93 +387,12 @@ module.exports = function(app,io) {
 
     });
 
-	app.post('/api/updateWeight',function (req,res) {
-		console.log(req.body);
-		var id = req.body.id;
-		var awt = req.body.awt;
-		var rwt = req.body.rwt;
-		var diff = parseFloat(parseFloat(awt).toFixed(3) - parseFloat(rwt).toFixed(3)).toFixed(3);
-		var query = "Update BatchData set AWT = "+awt+",DWT = "+diff+" where ID = "+id;
-		var stmt = db.prepare(query);
-		stmt.run();
-		stmt.finalize();
-		res.json({'error':false,'data':[]});
-
-    });
-
-	app.post('/api/addbatchdata',function (req,res) {
-		var batchid = req.body.batchid;
-        var productid = req.body.productid;
-		var product = req.body.product;
-		var min = req.body.min;
-		var max = req.body.max;
-		var awt = req.body.awt;
-		var rwt = req.body.rwt;
-		var stmt = db.prepare("INSERT INTO BatchData('BatchID','ProductID','Product','Min','Max','AWT','RWT') VALUES (?,?,?,?,?,?,?)");
-		stmt.run(batchid,productid,product,min,max,awt,rwt);
-		stmt.finalize();
-		res.json({'error':false,'data':[]});
-	});
-
-	app.post('/api/addproduct',function (req,res) {
-		var product = req.body.product;
-		var min = req.body.min;
-		var max = req.body.max;
-		var rwt = req.body.rwt;
-
-        	db.all("SELECT * FROM ProductMaster where Product = '"+product+"'", function(err, rows) {
-			if(rows.length > 0)
-			{
-				res.json({'error':true,'message':'Product Already Exist!'});
-			}
-			else{
-				var stmt = db.prepare("INSERT INTO ProductMaster('Product','Min','Max','RWT') VALUES (?,?,?,?)");
-				stmt.run(product,min,max,rwt);
-				stmt.finalize();
-				// res.json({'error':false,'message':'Product created successfully.'});
-				db.all("SELECT * FROM ProductMaster order by ID desc limit 1", function(err, rows) {
-					res.json({'error':false,'data':rows});
-				});
-			}
-		});
-	});
-
-	app.post('/api/updateproduct',function (req,res) {
-		var id = req.body.id;
-		var min = req.body.min;
-		var max = req.body.max;
-		var rwt = req.body.rwt;
-		var query = "UPDATE ProductMaster set Min = "+min+",Max = "+max+",RWT = "+rwt+" where ID = "+id;
-		var stmt = db.prepare(query);
-		stmt.run();
-		stmt.finalize();
-		res.json({'error':false,'data':[]});
-	});
-
-	app.post('/api/getProducts',function (req,res) {
-		db.all("SELECT * FROM ProductMaster order by Product desc", function(err, rows) {
-			res.json({'error':false,'data':rows});
-		});
-    });
-
-	
-	 app.post('/api/clearalldata',function (req,res) {
+	app.post('/api/resetall',function (req,res) {
 	    var query = "DELETE from BatchData";
-            var stmt = db.prepare(query);
-            stmt.run();
-            stmt.finalize();
-
-	    query = "DELETE from BatchRecord";
-            stmt = db.prepare(query);
-            stmt.run();
-            stmt.finalize();
-
-	    var query = "DELETE from ProductMaster";
-            var stmt = db.prepare(query);
-            stmt.run();
-            stmt.finalize();
-
-            res.json({'error':false,'data':[]});
+		var stmt = db.prepare(query);
+		stmt.run();
+		stmt.finalize();
+		res.json({'error':false,'data':[]});
    	 });
 
 	app.post('/api/updatedate',function (req,res) {

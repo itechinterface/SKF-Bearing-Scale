@@ -3,6 +3,13 @@
     <section class="content">
         <!--Form Start Here-->
     <div class="row">
+        <div class="col-md-12">
+            <div class="box-header">
+                <label style="font-size:large;color: blue;background-color: rgba(254, 243, 137, 0.991);">PC URL : http://{{Model.pcurl}}:8081 </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-2">
             <div class="box-header">
                 <button ng-click="reset()" class="btn btn-primary" style="width:100%">RESET</button>
@@ -37,7 +44,7 @@
         <div class="col-md-6" style="text-align: right;">
             <div class="box-header">
                 <img src="../images/accent.png" style="height:50px;text-align: right;"></img>
-                <img src="../images/skf.jpg" style="height:50px;text-align: right;"></img>
+                <img on-click-reset-hold="resetData()" src="../images/skf.jpg" style="height:50px;text-align: right;"></img>
             </div>
         </div>
     </div>
@@ -64,10 +71,10 @@
                                 <label>User Code</label>
                                 <input ng-model="Model.UserCode" type="text" class="form-control" placeholder="">
                             </div>
-                            <div class="form-group">
-                                <label>Extra 1</label>
+                            <!-- <div class="form-group">
+                                <label>Extra</label>
                                 <input ng-model="Model.Extra1" type="text" class="form-control" placeholder="">
-                            </div>
+                            </div> -->
                         </div>
                     </div><!-- /.box-body -->
                 </form>
@@ -95,10 +102,10 @@
                                 <label>Result Weight</label>
                                 <input disabled ng-model="Model.ResultWt" type="text" class="form-control" placeholder="">
                             </div>
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label>Extra 2</label>
                                 <input ng-model="Model.Extra2" type="text" class="form-control" placeholder="">
-                            </div>
+                            </div> -->
                             <!-- <div class="form-group">
                                 <label>Extra 3</label>
                                 <input ng-model="Model.Extra3" type="text" class="form-control" placeholder="">
@@ -120,7 +127,7 @@
                     <div ng-hide="!Model.showAdminView" class="col-md-3">
                         <div class="form-group">
                             <label>To Date</label>
-                            <input  ng-model="Model.fromDt" type="date" class="form-control" placeholder="">
+                            <input  ng-model="Model.toDt" type="date" class="form-control" placeholder="">
                         </div>
                     </div>
                     <div ng-hide="!Model.showAdminView" class="col-md-3">
@@ -160,9 +167,9 @@
                                 <tr ng-repeat="item in Model.batchRecords track by $index">
                                     <td style="width:10%;text-align: center;">{{item.BEARING_TYPE}}</td>
                                     <td on-click-and-hold="removeItem(item)" style="width:10%;text-align: center;">{{item.BEARING_NO}}</td>
-                                    <td style="width:10%;text-align: center;">{{item.BEFORE_WEIGHT}}</td>
-                                    <td style="width:10%;text-align: center;">{{item.AFTER_WEIGHT}}</td>
-                                    <td style="width:10%;text-align: center;">{{item.RESULT_WEIGHT}}</td>
+                                    <td on-click-hold="duplicate(item)" style="width:10%;text-align: center;">{{item.BEFORE_WEIGHT}}</td>
+                                    <td on-click-hold="duplicate(item)" style="width:10%;text-align: center;">{{item.AFTER_WEIGHT}}</td>
+                                    <td on-click-hold="duplicate(item)" style="width:10%;text-align: center;">{{item.RESULT_WEIGHT}}</td>
                                     <td style="width:10%;text-align: center;">{{item.EMPNAME}}</td>
                                     <td style="width:10%;text-align: center;">{{item.EMPCODE}}</td>
                                 </tr>
@@ -201,19 +208,4 @@
 <!--<script src="../plugins/knob/jquery.knob.js" type="text/javascript"></script>-->
 <script src="../plugins/bootstrap-slider/bootstrap-slider.js" type="text/javascript"></script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.10/d3.min.js"></script>-->
-<script type="text/javascript">
-    function capLock(e,ID){
-        kc = e.keyCode?e.keyCode:e.which;
-        sk = e.shiftKey?e.shiftKey:((kc == 16)?true:false);
-        if(((kc >= 65 && kc <= 90) && !sk)||((kc >= 97 && kc <= 122) && sk)){
-            document.getElementById(ID).style.backgroundColor = 'red';
-            document.getElementById(ID).style.color = 'white';
-        }
-        else{
-            document.getElementById(ID).style.backgroundColor = 'white';
-            document.getElementById(ID).style.color = 'black';
-        }
-
-    }
-</script>
 
