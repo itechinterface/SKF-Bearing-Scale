@@ -64,7 +64,7 @@ module.exports = function(app,io) {
 	
 	var SerialPort = require('serialport');
     //const Readline = SerialPort.parsers.Readline;
-
+ 
 	function getGeneralSettings() {
 
 		try {
