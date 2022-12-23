@@ -124,65 +124,6 @@ module.exports = function(app,io) {
 		}
 	}
 
-	function Print2x2_300(weight,printData,shift_time,date_time,wn) {
-        
-			var printer_ = initPrinter();
-			if(printer_ == undefined)
-				return;
-
-        	date_time = date_time.replace('-', '/');
-			date_time = date_time.replace('-', '/');
-
-			//ANDA/CP-OLD/SATO
-			if(isSATO)
-			{
-				printer_.write("^XA^PR4^MD24", function (err) {
-				});
-			}
-			
-			
-			//NEW-TSC
-			if(!isSATO)
-			{
-				printer_.write("^XA^PW400^LL400^LS0", function (err) {
-				});
-			}
-			
-
-			for (var i = 0; i < label_settings_2x2.length; i++) {
-
-				var item = label_settings_2x2[i];
-				if (item.Id == 1) {
-					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + weight + " kg.^FS^FS^FS", function (err) {
-					});
-				}
-				else if (item.Id == 2) {
-					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + printData.ShipperNo + "^FS^FS^FS", function (err) {
-					});
-				}
-				else if (item.Id == 3) {
-					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + wn.toString().toUpperCase() + "^FS^FS^FS", function (err) {
-					});
-				}
-				else if (item.Id == 4) {
-					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + date_time.replace('-', '/') + "^FS^FS^FS", function (err) {
-					});
-				}
-				else if (item.Id == 5) {
-					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + shift_time + "^FS^FS^FS", function (err) {
-					});
-				}
-				else if (item.Id == 6) {
-					printer_.write("^FO" + item.LeftPos + "," + item.TopPos + "^A0N," + item.FontSize + "," + item.FontSize + "^FD" + item.FieldName + "" + printData.CountryName.toString().toUpperCase() + "^FS^FS^FS", function (err) {
-					});
-				}
-				}
-				printer_.write("^XZ", function (err) {
-				});
-			//}
-	}
-
-
 	// var SerialPort = require('serialport');
 	
 	///////// GENERAL_SETTINGS_END //////////////////////////
@@ -286,6 +227,22 @@ module.exports = function(app,io) {
 					console.log(query);
 					stmt.run();
 					stmt.finalize();
+					var label = "^XA^PW400^LL400^LS0"+
+					"^FT20,50^A0N,22,22^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
+					"^FT20,100^A0N,22,22^FH\^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
+					"^FT20,150^A0N,22,22^FH\^CI28^FDBefore Weight :  "+parseFloat(BeforeWt).toFixed(3)+" kg.^FS^CI27"+
+					"^FT20,200^A0N,22,22^FH\^CI28^FDAfter Weight :  "+parseFloat(rows[0].AFTER_WEIGHT).toFixed(3)+" kg.^FS^CI27"+
+					"^FT20,250^A0N,22,22^FH\^CI28^FDResult  Difference :  "+parseFloat(ResultWt).toFixed(3)+" kg.^FS^CI27"+
+					"^FT20,300^A0N,22,22^FH\^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
+					"^FT20,350^A0N,22,22^FH\^CI28^FDDate & Time : "+DT+"^FS^CI27"+
+					"^PQ1,0,1,Y"+
+					"^XZ";
+					var printer_ = initPrinter();
+					if(printer_ != undefined)
+					{
+						printer_.write(label, function (err) {
+						});
+					}
 					res.json({'error':false});
 				}
 				else{
@@ -297,6 +254,23 @@ module.exports = function(app,io) {
 					var stmt = db.prepare(query);
 					stmt.run();
 					stmt.finalize();
+
+					var label = "^XA^PW400^LL400^LS0"+
+					"^FT20,50^A0N,22,22^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
+					"^FT20,100^A0N,22,22^FH\^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
+					"^FT20,150^A0N,22,22^FH\^CI28^FDBefore Weight :  "+parseFloat(rows[0].BEFORE_WEIGHT).toFixed(3)+" kg.^FS^CI27"+
+					"^FT20,200^A0N,22,22^FH\^CI28^FDAfter Weight :  "+parseFloat(AfterWt).toFixed(3)+" kg.^FS^CI27"+
+					"^FT20,250^A0N,22,22^FH\^CI28^FDResult  Difference :  "+parseFloat(ResultWt).toFixed(3)+" kg.^FS^CI27"+
+					"^FT20,300^A0N,22,22^FH\^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
+					"^FT20,350^A0N,22,22^FH\^CI28^FDDate & Time : "+DT+"^FS^CI27"+
+					"^PQ1,0,1,Y"+
+					"^XZ";
+					var printer_ = initPrinter();
+					if(printer_ != undefined)
+					{
+						printer_.write(label, function (err) {
+						});
+					}
 					res.json({'error':false});
 				}
 			}
@@ -307,6 +281,22 @@ module.exports = function(app,io) {
 					var stmt = db.prepare("INSERT INTO BatchData('BEARING_TYPE','BEARING_NO','BEFORE_WEIGHT','BEFORE_DATETIME','EMPNAME','EMPCODE','EX1','EX2','EX3') VALUES (?,?,?,?,?,?,?,?,?)");
 					stmt.run(BearingNo,SrNo,BeforeWt,DT,Username,UserCode,'',DT,Date.now());
 					stmt.finalize();
+					var label = "^XA^PW400^LL400^LS0"+
+					"^FT20,50^A0N,22,22^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
+					"^FT20,100^A0N,22,22^FH\^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
+					"^FT20,150^A0N,22,22^FH\^CI28^FDBefore Weight :  "+parseFloat(BeforeWt).toFixed(3)+" kg.^FS^CI27"+
+					"^FT20,200^A0N,22,22^FH\^CI28^FDAfter Weight :  ^FS^CI27"+
+					"^FT20,250^A0N,22,22^FH\^CI28^FDResult  Difference :   ^FS^CI27"+
+					"^FT20,300^A0N,22,22^FH\^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
+					"^FT20,350^A0N,22,22^FH\^CI28^FDDate & Time : "+DT+"^FS^CI27"+
+					"^PQ1,0,1,Y"+
+					"^XZ";
+					var printer_ = initPrinter();
+					if(printer_ != undefined)
+					{
+						printer_.write(label, function (err) {
+						});
+					}
 					res.json({'error':false});
 				}
 				else{
@@ -316,6 +306,22 @@ module.exports = function(app,io) {
 					var stmt = db.prepare("INSERT INTO BatchData('BEARING_TYPE','BEARING_NO','AFTER_WEIGHT','AFTER_DATETIME','RESULT_WEIGHT','RESULT_DATETIME','EMPNAME','EMPCODE','EX1','EX2','EX3') VALUES (?,?,?,?,?,?,?,?,?,?,?)");
 					stmt.run(BearingNo,SrNo,AfterWt,DT,ResultWt,DT,Username,UserCode,'',DT,Date.now());
 					stmt.finalize();
+					var label = "^XA^PW400^LL400^LS0"+
+					"^FT20,50^A0N,22,22^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
+					"^FT20,100^A0N,22,22^FH\^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
+					"^FT20,150^A0N,22,22^FH\^CI28^FDBefore Weight :   ^FS^CI27"+
+					"^FT20,200^A0N,22,22^FH\^CI28^FDAfter Weight : "+parseFloat(BeforeWt).toFixed(3)+"^FS^CI27"+
+					"^FT20,250^A0N,22,22^FH\^CI28^FDResult  Difference : ^FS^CI27"+
+					"^FT20,300^A0N,22,22^FH\^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
+					"^FT20,350^A0N,22,22^FH\^CI28^FDDate & Time : "+DT+"^FS^CI27"+
+					"^PQ1,0,1,Y"+
+					"^XZ";
+					var printer_ = initPrinter();
+					if(printer_ != undefined)
+					{
+						printer_.write(label, function (err) {
+						});
+					}
 					res.json({'error':false});
 				}
 			}
@@ -325,6 +331,23 @@ module.exports = function(app,io) {
 	app.post('/api/duplicateprint',function (req,res) {
 		var item = JSON.parse(req.body.item);
 		console.log(item);
+
+		var label = "^XA^PW400^LL400^LS0"+
+		"^FT20,50^A0N,22,22^FH\^CI28^FDBearing No. : "+item.BEARING_TYPE+"^FS^CI27"+
+		"^FT20,100^A0N,22,22^FH\^CI28^FDSr.No. :  "+item.BEARING_NO+"^FS^CI27"+
+		"^FT20,150^A0N,22,22^FH\^CI28^FDBefore Weight :  "+parseFloat(item.BEFORE_WEIGHT).toFixed(3)+"^FS^CI27"+
+		"^FT20,200^A0N,22,22^FH\^CI28^FDAfter Weight : "+parseFloat(item.AFTER_WEIGHT).toFixed(3)+"^FS^CI27"+
+		"^FT20,250^A0N,22,22^FH\^CI28^FDResult  Difference : "+parseFloat(item.RESULT_WEIGHT)+"^FS^CI27"+
+		"^FT20,300^A0N,22,22^FH\^CI28^FDMeasured  By : "+item.EMPNAME+", "+item.EMPCODE+"^FS^CI27"+
+		"^FT20,350^A0N,22,22^FH\^CI28^FDDate & Time : "+item.EX2+"^FS^CI27"+
+		"^PQ1,0,1,Y"+
+		"^XZ";
+		var printer_ = initPrinter();
+		if(printer_ != undefined)
+		{
+			printer_.write(label, function (err) {
+			});
+		}
 		// var lblBALE = "^FO"+template.BALE.split(',')[0]+","+template.BALE.split(',')[1]+"^FWR^FD"+item.SrNo+"^FS^";
 		// var lblSize = "^FO"+template.SIZE.split(',')[0]+","+template.SIZE.split(',')[1]+"^FWR^FD"+item.Size+"^FS^";
 		// var lblPCS = "^FO"+template.PCS.split(',')[0]+","+template.PCS.split(',')[1]+"^FWR^FD"+item.PCS+"^FS^";

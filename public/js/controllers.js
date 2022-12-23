@@ -170,6 +170,10 @@ angular.module('starter.controllers', [])
                         data = data.toFixed(parseInt(window.localStorage.getItem('dp')));
                         rootScope.$broadcast('onWeightChange',data);
                     });
+
+                    socket.on('forceprint', function (data) {
+                        rootScope.$broadcast('forceprint',data);
+                    });
                 }
             };
         }
@@ -195,6 +199,9 @@ angular.module('starter.controllers', [])
         $scope.Model.status = 1;
         $scope.Model.pcurl = "";
         
+        $rootScope.$on('forceprint', function (evt,data) {
+            
+        });
 
         $rootScope.$on('onWeightChange', function (evt,data) {
             if($location.absUrl() == 'http://localhost:8080/#/dashboard')
@@ -219,7 +226,15 @@ angular.module('starter.controllers', [])
             $scope.getBatchRecords();
         }
 
+        $scope.dummy = function(){
+            var srNo = prompt("Enter Bearing Sr.No.");
+            if (srNo != null) {
+                $scope.Model.SrNo = srNo;
+                $scope.enterWeight();
+            }
+        }
         
+
         $scope.$on('$viewContentLoaded', function() {
 
             var url = $location.absUrl().split('?')[0];
