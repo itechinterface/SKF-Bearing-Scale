@@ -138,6 +138,12 @@ module.exports = function(app,io) {
 		res.json(getNetworkIP());
 	});
 
+	app.post('/api/kb',function (req,res) {
+		var child = exec("echo RaspberryPi | sudo -S matchbox-keyboard", function (error, stdout, stderr) {
+		});
+		res.json({});
+	});
+
 	function getNetworkIP() {
 		var os = require('os');
 		var ifaces = os.networkInterfaces();

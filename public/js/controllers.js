@@ -230,6 +230,14 @@ angular.module('starter.controllers', [])
         }
 
         $scope.dummy = function(){
+            $http({
+                url: '/api/kb',
+                method: "POST"
+            })
+            .then(function(response) {
+            },
+            function(response) { // optional
+            });    
             var srNo = prompt("Enter Bearing Sr.No.");
             if (srNo != null) {
                 $scope.Model.SrNo = srNo;
