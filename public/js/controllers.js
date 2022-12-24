@@ -213,6 +213,28 @@ angular.module('starter.controllers', [])
                 $scope.Model.cWeight = weight;
             }
         });
+
+        $scope.updateDateTime = function(){
+            if($scope.Model.showAdminView)
+            {
+                var dt = prompt("Enter Date & Time YYYY-MM-DD hh:mm:ss");
+                if (dt != null) {
+                    
+                    $http({
+                        url: '/api/updatedate',
+                        method: "POST",
+                        data:{'date_time':dt}
+                    })
+                    .then(function(response) {
+                        console.log(response);
+                        alert("Date & Time Updated Successfully");
+                    },
+                    function(response) { // optional
+                    }); 
+                    
+                }
+            }
+        }
         
         $scope.reset = function(){
             $scope.Model.BearingNo = "";

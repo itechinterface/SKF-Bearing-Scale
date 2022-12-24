@@ -428,12 +428,16 @@ module.exports = function(app,io) {
 	app.post('/api/updatedate',function (req,res) {
 
 		var date_time = req.body.date_time
-                console.log(date_time);
+        console.log(date_time);
 		setTimeout(function () {
 			var child = exec("echo RaspberryPi | sudo -S date -s '"+date_time+"'", function (error, stdout, stderr) {
+				var child = exec("echo RaspberryPi | sudo hwclock -w", function (error, stdout, stderr) {
+					var child = exec("echo RaspberryPi | sudo hwclock -r", function (error, stdout, stderr) {
+						res.json(stdout);
+					});
+				});
 			});
 		},1000);
-		res.json('1');
 	});
 
 	app.get('*', function(req, res) {

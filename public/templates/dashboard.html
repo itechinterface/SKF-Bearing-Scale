@@ -1,11 +1,50 @@
 <!-- Site wrapper -->
 <div class="wrapper">
+    <script>function display_ct7() {
+        var x = new Date()
+        var ampm = x.getHours( ) >= 12 ? ' PM' : ' AM';
+        hours = x.getHours( ) % 12;
+        hours = hours ? hours : 12;
+        hours=hours.toString().length==1? 0+hours.toString() : hours;
+        
+        var minutes=x.getMinutes().toString()
+        minutes=minutes.length==1 ? 0+minutes : minutes;
+        
+        var seconds=x.getSeconds().toString()
+        seconds=seconds.length==1 ? 0+seconds : seconds;
+        
+        var month=(x.getMonth() +1).toString();
+        month=month.length==1 ? 0+month : month;
+        
+        var dt=x.getDate().toString();
+        dt=dt.length==1 ? 0+dt : dt;
+        
+        var x1=dt + "/" + month + "/" + x.getFullYear(); 
+        x1 = x1 + " - " +  hours + ":" +  minutes + ":" +  seconds + " " + ampm;
+    
+        document.getElementById('ct7').style.fontSize='20px';
+        document.getElementById('ct7').style.color='black';
+        document.getElementById('ct7').innerHTML = x1;
+        display_c7();
+         }
+         function display_c7(){
+            var refresh=1000; // Refresh rate in milli seconds
+            mytime=setTimeout('display_ct7()',refresh)
+        }
+        display_c7()
+    </script>
     <section class="content">
         <!--Form Start Here-->
     <div class="row" ng-hide="Model.showAdminView">
-        <div class="col-md-12">
+        <div class="col-md-8">
             <div class="box-header">
                 <label style="font-size:large;color: blue;background-color: rgba(254, 243, 137, 0.991);">PC URL : http://{{Model.pcurl}}:8081 </label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="box-header">
+                <span id='ct7' style="color:black;font-size: large;font-weight: bold;text-transform: uppercase;;text-align: right;background-color: rgba(254, 243, 137, 0.991);"></span>
+                <!-- <label style="text-align: right;font-size:large;color: blue;background-color: rgba(254, 243, 137, 0.991);"></label> -->
             </div>
         </div>
     </div>
@@ -54,7 +93,7 @@
 
         <div class="col-md-6" style="text-align: right;">
             <div class="box-header">
-                <img src="../images/accent.png" style="height:50px;text-align: right;"></img>
+                <img ng-click="updateDateTime()" src="../images/accent.png" style="height:50px;text-align: right;"></img>
                 <img on-click-reset-hold="resetData()" src="../images/skf.jpg" style="height:50px;text-align: right;"></img>
             </div>
         </div>
