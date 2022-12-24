@@ -35,25 +35,80 @@
                 <button ng-click="after()" class="btn btn-danger" style="width:100%">AFTER</button>
             </div>
         </div>
-        <div class="col-md-2">
+        <!-- <div class="col-md-2">
             <div class="box-header">
-                <button ng-click="dummy()" class="btn btn-warning" style="width:100%;color: black;font-weight: bold;">KEYBOARD</button>
+                <button ng-click="Model.kbView = !Model.kbView" class="btn btn-warning" style="width:100%;color: width;;font-weight: bold;background-color: black;">KEYBOARD</button>
             </div>
-        </div>
+        </div> -->
         <!-- <div class="col-md-9">
             <div class="box-header">
                 <marquee behavior="scroll" direction="left" style="font-style: italic;font-weight: bold;font-size: large;color: red;">ACCENT INSTRUMENTS</marquee>
             </div>
         </div> -->
 
-        <div class="col-md-6" style="text-align: right;">
+        <div class="col-md-9" style="text-align: right;">
             <div class="box-header">
                 <img src="../images/accent.png" style="height:50px;text-align: right;"></img>
                 <img on-click-reset-hold="resetData()" src="../images/skf.jpg" style="height:50px;text-align: right;"></img>
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" ng-hide="!Model.kbView">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Keypad</label>
+                <input ng-model="Model.keypad" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label style="opacity: 0%">DONE</label>
+                <button ng-click="kbClose(1)" class="btn btn-success" style="width:100%;color: width;font-weight: bold;">ENTER</button>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label style="opacity: 0%">DONE</label>
+                <button ng-click="kbClose(0)" class="btn btn-primary" style="width:100%;color: width;font-weight: bold;">CANCEL</button>
+            </div>
+        </div>
+        <div class="col-md-1" ng-repeat="i in [1,2,3,4,5,6,7,8,9,0]">
+            <button ng-click="Model.keypad=Model.keypad+''+i" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">{{i}}</button>
+        </div>
+        <div class="col-md-1">
+            <button ng-click="Model.keypad=Model.keypad+'-'" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">-</button>
+        </div>
+        <div class="col-md-1">
+            <button ng-click="Model.keypad=Model.keypad+'+'" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">+</button>
+        </div>
+        <div class="col-md-1" ng-repeat="i in ['A','B','C','D','E','F','G' ,'H' ,'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q' ,'R' ,'S' ,'T' ,'U' ,'V' ,'W' ,'X', 'Y', 'Z']">
+            <button ng-click="Model.keypad=Model.keypad+''+i" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">{{i}}</button>
+        </div>
+        <div class="col-md-1" ng-repeat="i in ['a','b','c','d','e','f','g' ,'h' ,'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q' ,'r' ,'s' ,'t' ,'u' ,'v' ,'w' ,'x', 'y', 'z']">
+            <button ng-click="Model.keypad=Model.keypad+''+i" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">{{i}}</button>
+        </div>
+        <div class="col-md-1">
+            <button ng-click="Model.keypad=Model.keypad+' '" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">SPACE</button>
+        </div>
+        <div class="col-md-1">
+            <button ng-click="Model.keypad=Model.keypad.substring(0,Model.keypad.length-1)" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">BACK</button>
+        </div>
+        <div class="col-md-1">
+            <button ng-click="Model.keypad=Model.keypad+'_'" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">_</button>
+        </div>
+        <div class="col-md-1">
+            <button ng-click="Model.keypad=Model.keypad+'_'" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">_</button>
+        </div>
+        <div class="col-md-1">
+            <button ng-click="Model.keypad=Model.keypad+'.'" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">.</button>
+        </div>
+        <div class="col-md-1">
+            <button ng-click="Model.keypad=Model.keypad+'@'" class="btn btn-primary" style="margin:5px;width:100px;background-color: gainsboro;color: blue;font-size: large;font-weight: bold;">@</button>
+        </div>
+         
+
+    </div>
+    <div class="row" ng-hide="Model.kbView">
         <div class="col-md-3">
             <div class="box box-primary">
                 <!-- form start -->
@@ -62,19 +117,19 @@
                         <div>
                             <div class="form-group">
                                 <label>Bearing No.</label>
-                                <input ng-model="Model.BearingNo" type="text" class="form-control" placeholder="">
+                                <input ng-focus="Model.input = 1;Model.keypad=Model.BearingNo;Model.kbView = true" ng-model="Model.BearingNo" type="text" class="form-control" placeholder="">
                             </div>
                             <div class="form-group">
                                 <label>Sr.No.</label>
-                                <input ng-model="Model.SrNo" type="text" class="form-control" placeholder="">
+                                <input ng-focus="Model.input = 2;Model.keypad=Model.SrNo;Model.kbView = true" ng-model="Model.SrNo" type="text" class="form-control" placeholder="">
                             </div>
                             <div class="form-group">
                                 <label>User Name</label>
-                                <input ng-model="Model.Username" type="text" class="form-control" placeholder="">
+                                <input ng-focus="Model.input = 3;Model.keypad=Model.Username;Model.kbView = true" ng-model="Model.Username" type="text" class="form-control" placeholder="">
                             </div>
                             <div class="form-group">
                                 <label>User Code</label>
-                                <input ng-model="Model.UserCode" type="text" class="form-control" placeholder="">
+                                <input ng-focus="Model.input = 4;Model.keypad=Model.UserCode;Model.kbView = true" ng-model="Model.UserCode" type="text" class="form-control" placeholder="">
                             </div>
                             <!-- <div class="form-group">
                                 <label>Extra</label>

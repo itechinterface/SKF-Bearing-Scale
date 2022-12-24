@@ -229,6 +229,31 @@ angular.module('starter.controllers', [])
             $scope.getBatchRecords();
         }
 
+        $scope.kbClose = function(index){
+            if(index == 1)
+            {
+                if($scope.Model.input == 1)
+                {
+                    $scope.Model.BearingNo = $scope.Model.keypad;
+                }
+                if($scope.Model.input == 2)
+                {
+                    $scope.Model.SrNo = $scope.Model.keypad;
+                }
+                if($scope.Model.input == 3)
+                {
+                    $scope.Model.Username = $scope.Model.keypad;
+                }
+                if($scope.Model.input == 4)
+                {
+                    $scope.Model.UserCode = $scope.Model.keypad;
+                }
+            }
+            $scope.Model.keypad = "";
+            $scope.Model.input = 0;
+            $scope.Model.kbView = !$scope.Model.kbView;
+        }
+
         $scope.dummy = function(){
             $http({
                 url: '/api/kb',
