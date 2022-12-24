@@ -2,7 +2,7 @@
 <div class="wrapper">
     <section class="content">
         <!--Form Start Here-->
-    <div class="row">
+    <div class="row" ng-hide="Model.showAdminView">
         <div class="col-md-12">
             <div class="box-header">
                 <label style="font-size:large;color: blue;background-color: rgba(254, 243, 137, 0.991);">PC URL : http://{{Model.pcurl}}:8081 </label>
@@ -10,29 +10,35 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-2" ng-hide="Model.showAdminView">
             <div class="box-header">
                 <button ng-click="reset()" class="btn btn-primary" style="width:100%">RESET</button>
             </div>
         </div>
-        <div ng-if="Model.status == 1" class="col-md-2">
+        <div ng-if="Model.status == 1" class="col-md-2" ng-hide="Model.showAdminView">
             <div class="box-header">
                 <button ng-click="before()" class="btn btn-success" style="width:100%">BEFORE</button>
             </div>
         </div>
-        <div ng-if="Model.status == 0" class="col-md-2">
+        <div ng-if="Model.status == 0" class="col-md-2" ng-hide="Model.showAdminView">
             <div class="box-header">
                 <button ng-click="before()" class="btn btn-danger" style="width:100%">BEFORE</button>
             </div>
         </div>
-        <div ng-if="Model.status == 0" class="col-md-2">
+        <div ng-if="Model.status == 0" class="col-md-2" ng-hide="Model.showAdminView">
             <div class="box-header">
                 <button ng-click="after()" class="btn btn-success" style="width:100%">AFTER</button>
             </div>
         </div>
-        <div ng-if="Model.status == 1" class="col-md-2">
+        <div ng-if="Model.status == 1" class="col-md-2" ng-hide="Model.showAdminView">
             <div class="box-header">
                 <button ng-click="after()" class="btn btn-danger" style="width:100%">AFTER</button>
+            </div>
+        </div>
+
+        <div class="col-md-6" ng-hide="!Model.showAdminView">
+            <div class="box-header">
+                <label style="opacity:0%">Keypad</label>
             </div>
         </div>
         <!-- <div class="col-md-2">
@@ -126,7 +132,7 @@
 
 
     <div class="row" ng-hide="Model.kbView">
-        <div class="col-md-6">
+        <div class="col-md-6" ng-hide="Model.showAdminView">
             <div class="box box-primary">
                 <!-- form start -->
                 <form role="form">
@@ -157,7 +163,7 @@
                 </form>
         </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" ng-hide="Model.showAdminView">
             <div class="box box-primary">
                 <!-- form start -->
                 <form role="form">
@@ -231,16 +237,20 @@
                                         <th style="width:10%;text-align: center;">RESULT WT.</th>
                                         <th style="width:10%;text-align: center;">USER NAME</th>
                                         <th style="width:10%;text-align: center;">USER CODE</th>
+                                        <th ng-hide="Model.showAdminView" style="width:10%;text-align: center;">PRINT</th>
+                                        <th ng-hide="!Model.showAdminView" style="width:10%;text-align: center;">DELETE</th>
                                     </tr>
                                 </thead>
                                 <tr ng-repeat="item in Model.batchRecords track by $index">
                                     <td style="width:10%;text-align: center;">{{item.BEARING_TYPE}}</td>
-                                    <td on-click-and-hold="removeItem(item)" style="width:10%;text-align: center;">{{item.BEARING_NO}}</td>
-                                    <td on-click-hold="duplicate(item)" style="width:10%;text-align: center;">{{item.BEFORE_WEIGHT}}</td>
-                                    <td on-click-hold="duplicate(item)" style="width:10%;text-align: center;">{{item.AFTER_WEIGHT}}</td>
-                                    <td on-click-hold="duplicate(item)" style="width:10%;text-align: center;">{{item.RESULT_WEIGHT}}</td>
+                                    <td style="width:10%;text-align: center;">{{item.BEARING_NO}}</td>
+                                    <td style="width:10%;text-align: center;">{{item.BEFORE_WEIGHT}}</td>
+                                    <td style="width:10%;text-align: center;">{{item.AFTER_WEIGHT}}</td>
+                                    <td style="width:10%;text-align: center;">{{item.RESULT_WEIGHT}}</td>
                                     <td style="width:10%;text-align: center;">{{item.EMPNAME}}</td>
                                     <td style="width:10%;text-align: center;">{{item.EMPCODE}}</td>
+                                    <td ng-hide="Model.showAdminView" style="width:10%;text-align: center;"><button ng-click="duplicate(item)" class="btn btn-primary" style="width:100%">PRINT</button></td>
+                                    <td ng-hide="!Model.showAdminView" style="width:10%;text-align: center;"><button ng-click="removeItem(item)" class="btn btn-danger" style="width:100%">DELETE</button></td>
                                 </tr>
                             </table>
                         </div>
