@@ -1,30 +1,27 @@
 angular.module('starter.controllers', [])
 
     .factory('socket', function ($rootScope) {
-        return{
-
+        var socket = io.connect('http://localhost:8081');
+        return {
+            on: function (eventName, callback) {
+                socket.on(eventName, function () {
+                    var args = arguments;
+                    $rootScope.$apply(function () {
+                        callback.apply(socket, args);
+                    });
+                });
+            },
+            emit: function (eventName, data, callback) {
+                socket.emit(eventName, data, function () {
+                    var args = arguments;
+                    $rootScope.$apply(function () {
+                        if (callback) {
+                            callback.apply(socket, args);
+                        }
+                    });
+                })
+            }
         };
-        // var socket = io.connect('http://localhost:8081');
-        // return {
-        //     on: function (eventName, callback) {
-        //         socket.on(eventName, function () {
-        //             var args = arguments;
-        //             $rootScope.$apply(function () {
-        //                 callback.apply(socket, args);
-        //             });
-        //         });
-        //     },
-        //     emit: function (eventName, data, callback) {
-        //         socket.emit(eventName, data, function () {
-        //             var args = arguments;
-        //             $rootScope.$apply(function () {
-        //                 if (callback) {
-        //                     callback.apply(socket, args);
-        //                 }
-        //             });
-        //         })
-        //     }
-        // };
     })
 
     .directive('exportToCsv',function(){
@@ -203,15 +200,17 @@ angular.module('starter.controllers', [])
         $scope.Model.pcurl = "";
         
         $rootScope.$on('forceprint', function (evt,data) {
-            
+            $scope.Model.input = 2;
+            $scope.Model.keypad = $scope.Model.SrNo;
+            $scope.Model.kbView = true;
         });
 
         $rootScope.$on('onWeightChange', function (evt,data) {
-            if($location.absUrl() == 'http://localhost:8080/#/dashboard')
-            {
+            //if($location.absUrl() == 'http://localhost:8080/#/dashboard')
+            //{
                 var weight = data;
                 $scope.Model.cWeight = weight;
-            }
+            //}
         });
 
         $scope.updateDateTime = function(){
@@ -396,8 +395,8 @@ angular.module('starter.controllers', [])
             $scope.Model.Extra3 = "";
         
             
-            $scope.Model.cWeight = i+10;
-            i=i+10;
+            //$scope.Model.cWeight = i+10;
+            //i=i+10;
 
             var obj = {'BearingNo':$scope.Model.BearingNo,
                 'SrNo':$scope.Model.SrNo,
