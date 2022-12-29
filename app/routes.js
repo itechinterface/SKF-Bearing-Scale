@@ -287,22 +287,22 @@ module.exports = function(app,io) {
 					var stmt = db.prepare("INSERT INTO BatchData('BEARING_TYPE','BEARING_NO','BEFORE_WEIGHT','BEFORE_DATETIME','EMPNAME','EMPCODE','EX1','EX2','EX3') VALUES (?,?,?,?,?,?,?,?,?)");
 					stmt.run(BearingNo,SrNo,BeforeWt,DT,Username,UserCode,'',DT,Date.now());
 					stmt.finalize();
-					var label = "^XA^PW400^LL400^LS0"+
-					"^FT25,50^A0N,26,26^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
-					"^FT25,100^A0N,26,26^FH\^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
-					"^FT25,150^A0N,26,26^FH\^CI28^FDBefore Weight :  "+parseFloat(BeforeWt).toFixed(3)+" Kg.^FS^CI27"+
-					"^FT25,200^A0N,26,26^FH\^CI28^FDAfter Weight :  ^FS^CI27"+
-					"^FT25,250^A0N,26,26^FH\^CI28^FDResult  Difference :   ^FS^CI27"+
-					"^FT25,300^A0N,26,26^FH\^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
-					"^FT25,350^A0N,26,26^FH\^CI28^FDDate & Time : "+DT+"^FS^CI27"+
-					"^PQ1,0,1,Y"+
-					"^XZ";
-					var printer_ = initPrinter();
-					if(printer_ != undefined)
-					{
-						printer_.write(label, function (err) {
-						});
-					}
+					// var label = "^XA^PW400^LL400^LS0"+
+					// "^FT25,50^A0N,26,26^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
+					// "^FT25,100^A0N,26,26^FH\^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
+					// "^FT25,150^A0N,26,26^FH\^CI28^FDBefore Weight :  "+parseFloat(BeforeWt).toFixed(3)+" Kg.^FS^CI27"+
+					// "^FT25,200^A0N,26,26^FH\^CI28^FDAfter Weight :  ^FS^CI27"+
+					// "^FT25,250^A0N,26,26^FH\^CI28^FDResult  Difference :   ^FS^CI27"+
+					// "^FT25,300^A0N,26,26^FH\^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
+					// "^FT25,350^A0N,26,26^FH\^CI28^FDDate & Time : "+DT+"^FS^CI27"+
+					// "^PQ1,0,1,Y"+
+					// "^XZ";
+					// var printer_ = initPrinter();
+					// if(printer_ != undefined)
+					// {
+					// 	printer_.write(label, function (err) {
+					// 	});
+					// }
 					res.json({'error':false});
 				}
 				else{

@@ -317,16 +317,16 @@ angular.module('starter.controllers', [])
         });
 
         $scope.before = function(){
-            if($scope.Model.status == 1)
-                $scope.Model.status = 0;
-            else    
-                $scope.Model.status = 1;
+            //if($scope.Model.status == 1)
+            //    $scope.Model.status = 0;
+            //else    
+            $scope.Model.status = 1;
         }
         $scope.after = function(){
-            if($scope.Model.status == 1)
-                $scope.Model.status = 0;
-            else
-                $scope.Model.status = 1;                
+            //if($scope.Model.status == 1)
+            $scope.Model.status = 0;
+            //else
+            //    $scope.Model.status = 1;                
         }
 
         $scope.searchBearing = function(){
@@ -420,7 +420,12 @@ angular.module('starter.controllers', [])
             })
             .then(function(response) {
                 $scope.getBatchRecords();
-                $scope.Model.SrNo = "";
+                if($scope.Model.status == 1)
+                $scope.Model.status = 0;
+                else
+                $scope.Model.status = 1;  
+                //$scope.after();
+                //$scope.Model.SrNo = "";
             },
             function(response) {
 
