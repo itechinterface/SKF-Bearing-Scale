@@ -40,7 +40,7 @@ module.exports = function(app,io) {
 	});
 
 	///////// GENERAL_SETTINGS //////////////////////////
-	/*	
+		
 		gpio.destroy();
 		gpio.reset();
 
@@ -60,7 +60,7 @@ module.exports = function(app,io) {
 
 		gpio.setup(16, gpio.DIR_IN, gpio.EDGE_BOTH);
 	
-    */    
+        
 	
 	var SerialPort = require('serialport');
     //const Readline = SerialPort.parsers.Readline;
