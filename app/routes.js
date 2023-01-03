@@ -205,6 +205,43 @@ module.exports = function(app,io) {
 			res.json({'error':false,'data':rows});
 		});
     });
+
+	app.post('/api/getBearingTypes',function (req,res) {
+		db.all("SELECT * FROM BearingMaster order by ID desc", function(err, rows) {
+			res.json({'error':false,'data':rows});
+		});
+    });
+
+	app.post('/api/getUsers',function (req,res) {
+		db.all("SELECT * FROM UsersMaster order by ID desc", function(err, rows) {
+			res.json({'error':false,'data':rows});
+		});
+    });
+
+	app.post('/api/addbearingmaster',function (req,res) {
+		
+		var BearingType = req.body.BearingType;
+		var MinWeight = req.body.MinWeight;
+		var MaxWeight = req.body.MaxWeight;
+		
+		var stmt = db.prepare("INSERT INTO BearingMaster('Name','MinWt','MaxWt') VALUES (?,?,?)");
+		stmt.run(BearingType,MinWeight,MaxWeight);
+		stmt.finalize();
+		
+		res.json({'error':false});
+	});
+
+	app.post('/api/addusersmaster',function (req,res) {
+		
+		var UserName = req.body.UserName;
+		var UserCode = req.body.UserCode;
+		
+		var stmt = db.prepare("INSERT INTO UsersMaster('Name','Code') VALUES (?,?)");
+		stmt.run(UserName,UserCode);
+		stmt.finalize();
+		
+		res.json({'error':false});
+	});
 	
 	app.post('/api/addbatchdata',function (req,res) {
 		
@@ -253,7 +290,7 @@ module.exports = function(app,io) {
 				}
 				else{
 
-					var ResultWt = (parseFloat(rows[0].BEFORE_WEIGHT) - parseFloat(AfterWt)).toFixed(3);
+					var ResultWt = (parseFloat(AfterWt) - parseFloat(rows[0].BEFORE_WEIGHT)).toFixed(3);
 					var DT = getDateTime();
 					var query = "Update BatchData set AFTER_WEIGHT = "+AfterWt+",AFTER_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '',EX2 = '"+DT+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
 					console.log(query);
@@ -307,7 +344,7 @@ module.exports = function(app,io) {
 				}
 				else{
 
-					var ResultWt = (parseFloat(BeforeWt) - parseFloat(AfterWt)).toFixed(3);
+					var ResultWt = (parseFloat(AfterWt) - parseFloat(BeforeWt)).toFixed(3);
 					var DT = getDateTime();
 					var stmt = db.prepare("INSERT INTO BatchData('BEARING_TYPE','BEARING_NO','AFTER_WEIGHT','AFTER_DATETIME','RESULT_WEIGHT','RESULT_DATETIME','EMPNAME','EMPCODE','EX1','EX2','EX3') VALUES (?,?,?,?,?,?,?,?,?,?,?)");
 					stmt.run(BearingNo,SrNo,AfterWt,DT,ResultWt,DT,Username,UserCode,'',DT,Date.now());
@@ -410,6 +447,28 @@ module.exports = function(app,io) {
 		
 		var id = req.body.id;
 		var query = "DELETE from BatchData where ID = "+id;
+		var stmt = db.prepare(query);
+		stmt.run();
+		stmt.finalize();
+		res.json({'error':false,'data':[]});
+
+    });
+
+	app.post('/api/removeBearingType',function (req,res) {
+		
+		var id = req.body.id;
+		var query = "DELETE from BearingMaster where ID = "+id;
+		var stmt = db.prepare(query);
+		stmt.run();
+		stmt.finalize();
+		res.json({'error':false,'data':[]});
+
+    });
+
+	app.post('/api/removeUserItem',function (req,res) {
+		
+		var id = req.body.id;
+		var query = "DELETE from UsersMaster where ID = "+id;
 		var stmt = db.prepare(query);
 		stmt.run();
 		stmt.finalize();

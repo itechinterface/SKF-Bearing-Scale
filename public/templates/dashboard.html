@@ -36,50 +36,59 @@
     <section class="content">
         <!--Form Start Here-->
     <div class="row" ng-hide="Model.showAdminView">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <div class="box-header">
-                <label style="font-size:large;color: blue;background-color: rgba(254, 243, 137, 0.991);">PC URL : http://{{Model.pcurl}}:8081 </label>
+                <label style="font-size:large;color: blue;background-color: rgba(254, 243, 137, 0.991);padding: 10px;">PC URL : http://{{Model.pcurl}}:8081  <br><span id='ct7' style="color:black;font-size: large;font-weight: bold;text-transform: uppercase;;text-align: right;background-color: rgba(254, 243, 137, 0.991);"></span></label>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="box-header">
-                <span id='ct7' style="color:black;font-size: large;font-weight: bold;text-transform: uppercase;;text-align: right;background-color: rgba(254, 243, 137, 0.991);"></span>
-                <!-- <label style="text-align: right;font-size:large;color: blue;background-color: rgba(254, 243, 137, 0.991);"></label> -->
+        <div class="col-md-6">
+            <div class="box-header" style="text-align:right">
+                <img ng-click="updateDateTime()" src="../images/accent.png" style="height:70px;text-align: right;"></img>
+                <img on-click-reset-hold="resetData()" src="../images/skf.jpg" style="height:70px;text-align: right;"></img>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2" ng-hide="Model.showAdminView">
+        <div class="col-md-2" ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)">
             <div class="box-header">
                 <button ng-click="reset()" class="btn btn-primary" style="width:100%">RESET</button>
             </div>
         </div>
-        <div ng-if="Model.status == 1" class="col-md-2" ng-hide="Model.showAdminView">
+        <div ng-if="Model.status == 1" class="col-md-2" ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)">
             <div class="box-header">
                 <button ng-click="before()" class="btn btn-success" style="width:100%">BEFORE</button>
             </div>
         </div>
-        <div ng-if="Model.status == 0" class="col-md-2" ng-hide="Model.showAdminView">
+        <div ng-if="Model.status == 0" class="col-md-2" ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)">
             <div class="box-header">
                 <button ng-click="before()" class="btn btn-danger" style="width:100%">BEFORE</button>
             </div>
         </div>
-        <div ng-if="Model.status == 0" class="col-md-2" ng-hide="Model.showAdminView">
+        <div ng-if="Model.status == 0" class="col-md-2" ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)">
             <div class="box-header">
                 <button ng-click="after()" class="btn btn-success" style="width:100%">AFTER</button>
             </div>
         </div>
-        <div ng-if="Model.status == 1" class="col-md-2" ng-hide="Model.showAdminView">
+        <div ng-if="Model.status == 1" class="col-md-2" ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)">
             <div class="box-header">
                 <button ng-click="after()" class="btn btn-danger" style="width:100%">AFTER</button>
             </div>
         </div>
-
-        <div class="col-md-6" ng-hide="!Model.showAdminView">
+        <div class="col-md-3" ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)">
+            <div class="box-header">
+                <button ng-click="Model.bearingMasterShow=true;Model.BearingTypeMaster='';Model.BearingMinWeight='';Model.BearingMaxWeight='';Model.UsernameMaster='';Model.UserCodeMaster='';" class="btn btn-primary" style="width:100%">BEARING MASTER</button>
+            </div>
+        </div>
+        <div class="col-md-3" ng-hide="Model.showAdminView || (Model.userMasterShow || Model.bearingMasterShow)">
+            <div class="box-header">
+                <button ng-click="Model.userMasterShow=true;Model.BearingTypeMaster='';Model.BearingMinWeight='';Model.BearingMaxWeight='';Model.UsernameMaster='';Model.UserCodeMaster='';" class="btn btn-primary" style="width:100%">USERS MASTER</button>
+            </div>
+        </div>
+        <!-- <div class="col-md-6" ng-hide="!Model.showAdminView">
             <div class="box-header">
                 <label style="opacity:0%">Keypad</label>
             </div>
-        </div>
+        </div> -->
         <!-- <div class="col-md-2">
             <div class="box-header">
                 <button ng-click="Model.kbView = !Model.kbView" class="btn btn-warning" style="width:100%;color: width;;font-weight: bold;background-color: black;">KEYBOARD</button>
@@ -91,12 +100,9 @@
             </div>
         </div> -->
 
-        <div class="col-md-6" style="text-align: right;">
-            <div class="box-header">
-                <img ng-click="updateDateTime()" src="../images/accent.png" style="height:50px;text-align: right;"></img>
-                <img on-click-reset-hold="resetData()" src="../images/skf.jpg" style="height:50px;text-align: right;"></img>
-            </div>
-        </div>
+        <!-- <div class="col-md-6" style="text-align: right;">
+            
+        </div> -->
     </div>
     <div class="row" ng-hide="!Model.kbView">
         <div class="col-md-6">
@@ -155,12 +161,12 @@
     </div>
 
     <div class="row" ng-hide="Model.kbView">
-        <div ng-hide="Model.showAdminView" class="col-md-6">
+        <div ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)" class="col-md-6">
             <div class="box-header" style="background-color: black;text-align: right;">
                 <h3 class="box-title" style="font-size: xx-large;color: white;background-color:'black'">{{ Model.cWeight }} kg</h3>
             </div>
         </div>
-        <div ng-hide="Model.showAdminView" class="col-md-6">
+        <div ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)" class="col-md-6">
             <div class="box-header">
                 <button ng-click="enterWeight()" class="btn btn-primary" style="width:100%">PRINT</button>
             </div>
@@ -169,17 +175,100 @@
     </div>
     
 
-
-    <div class="row" ng-hide="Model.kbView">
+    <div class="row" ng-hide="Model.kbView || (!Model.bearingMasterShow && !Model.userMasterShow)">
         <div class="col-md-6" ng-hide="Model.showAdminView">
             <div class="box box-primary">
                 <!-- form start -->
                 <form role="form">
                     <div class="box-body">
                         <div>
+                            <div class="form-group" ng-hide="!Model.bearingMasterShow">
+                                <label>BEARING TYPE</label>
+                                <input ng-focus="Model.input = 5;Model.keypad='';Model.kbView = true" ng-model="Model.BearingTypeMaster" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
+                            </div>
+                            <div class="form-group" ng-hide="!Model.bearingMasterShow">
+                                <label>MIN. WEIGHT</label>
+                                <input ng-focus="Model.input = 6;Model.keypad='';Model.kbView = true" ng-model="Model.BearingMinWeight" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
+                            </div>
+                            <div class="form-group" ng-hide="!Model.bearingMasterShow">
+                                <label>MAX. WEIGHT</label>
+                                <input ng-focus="Model.input = 7;Model.keypad='';Model.kbView = true" ng-model="Model.BearingMaxWeight" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
+                            </div>
+                            <div class="form-group" ng-hide="!Model.bearingMasterShow">
+                                <button ng-click="saveBearingType()" class="btn btn-primary" style="width:50%;float: left;">SAVE</button>
+                                <button ng-click="Model.bearingMasterShow=false" class="btn btn-danger" style="width:45%;float: left;margin-left: 5px;">CANCEL</button>
+                            </div>
+                            <div class="form-group" ng-hide="!Model.userMasterShow">
+                                <label>USER NAME</label>
+                                <input ng-focus="Model.input = 8;Model.keypad='';Model.kbView = true" ng-model="Model.UsernameMaster" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
+                            </div>
+                            <div class="form-group" ng-hide="!Model.userMasterShow">
+                                <label>USER CODE</label>
+                                <input ng-focus="Model.input = 9;Model.keypad='';Model.kbView = true" ng-model="Model.UserCodeMaster" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
+                            </div>
+                            <div class="form-group" ng-hide="!Model.userMasterShow">
+                                <button ng-click="saveUsers()" class="btn btn-primary" style="width:50%;float: left;">SAVE</button>
+                                <button ng-click="Model.userMasterShow=false" class="btn btn-danger" style="width:45%;float: left;margin-left: 5px;">CANCEL</button>
+                            </div>
+                        </div>
+                    </div><!-- /.box-body -->
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6" ng-hide="Model.showAdminView || !Model.bearingMasterShow">
+            <div class="box-body table-responsive no-padding" style="max-height:600px;overflow-x: auto !important;">
+                <table class="table">
+                    <thead style="position: sticky;top: 0;background-color: lightgrey;color: black;font-size: larger;">
+                        <tr>
+                            <th>BEARING TYPE</th>
+                            <th>MIN. WEIGHT</th>
+                            <th>MAX. WEIGHT</th>
+                            <th style="width:10%;text-align: center;">DELETE</th>
+                        </tr>
+                    </thead>
+                    <tr ng-repeat="item in Model.bearingTypesMaster track by $index">
+                        <td>{{item.Name}}</td>
+                        <td>{{item.MinWt}}</td>
+                        <td>{{item.MaxWt}}</td>
+                        <td style="width:10%;text-align: center;"><button ng-click="removeBearingType(item)" class="btn btn-danger" style="width:100%">DELETE</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6" ng-hide="Model.showAdminView || !Model.userMasterShow">
+            <div class="box-body table-responsive no-padding" style="max-height:600px;overflow-x: auto !important;">
+                <table class="table">
+                    <thead style="position: sticky;top: 0;background-color: lightgrey;color: black;font-size: larger;">
+                        <tr>
+                            <th>USER NAME</th>
+                            <th>USER CODE</th>
+                            <th style="width:10%;text-align: center;">DELETE</th>
+                        </tr>
+                    </thead>
+                    <tr ng-repeat="item in Model.usersDataMaster track by $index">
+                        <td>{{item.Name}}</td>
+                        <td>{{item.Code}}</td>
+                        <td style="width:10%;text-align: center;"><button ng-click="removeUserItem(item)" class="btn btn-danger" style="width:100%">DELETE</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" ng-hide="Model.kbView">
+        <div class="col-md-6" ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)">
+            <div class="box box-primary">
+                <!-- form start -->
+                <form role="form">
+                    <div class="box-body">
+                        <div>
                             <div class="form-group">
-                                <label>BEARING NO.</label>
-                                <input ng-focus="Model.input = 1;Model.keypad=Model.BearingNo;Model.kbView = true" ng-model="Model.BearingNo" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
+                                <label>BEARING TYPE</label>
+                                <select class="form-control" ng-model="Model.BearingNo">
+                                    <option ng-repeat="BearingNo in Model.bearingTypesMaster track by $index" value="{{BearingNo}}">{{BearingNo.Name}}</option>
+                                </select>
+                                <!-- <input ng-focus="Model.input = 1;Model.keypad=Model.BearingNo;Model.kbView = true" ng-model="Model.BearingNo" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder=""> -->
                             </div>
                             <div class="form-group">
                                 <label>SR. NO.</label>
@@ -187,11 +276,14 @@
                             </div>
                             <div class="form-group">
                                 <label>USER NAME</label>
-                                <input ng-focus="Model.input = 3;Model.keypad=Model.Username;Model.kbView = true" ng-model="Model.Username" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
+                                <select class="form-control" ng-model="Model.Username">
+                                    <option ng-selected="userSelected()" ng-repeat="item in Model.usersDataMaster" value="{{item}}">{{item.Name}}</option>
+                                </select>
+                                <!-- <input ng-focus="Model.input = 3;Model.keypad=Model.Username;Model.kbView = true" ng-model="Model.Username" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder=""> -->
                             </div>
                             <div class="form-group">
                                 <label>USER CODE</label>
-                                <input ng-focus="Model.input = 4;Model.keypad=Model.UserCode;Model.kbView = true" ng-model="Model.UserCode" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
+                                <input disabled ng-focus="Model.input = 4;Model.keypad=Model.UserCode;Model.kbView = true" ng-model="Model.UserCode" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder="">
                             </div>
                             <!-- <div class="form-group">
                                 <label>Extra</label>
@@ -202,7 +294,7 @@
                 </form>
         </div>
         </div>
-        <div class="col-md-6" ng-hide="Model.showAdminView">
+        <div class="col-md-6" ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)">
             <div class="box box-primary">
                 <!-- form start -->
                 <form role="form">
@@ -238,7 +330,7 @@
             </div>
         </div>
         
-        <div class="col-md-12">
+        <div class="col-md-12" ng-hide="Model.bearingMasterShow || Model.userMasterShow">
             <div class="box box-primary">
                 <div class="row">
                     <div ng-hide="!Model.showAdminView" class="col-md-3">

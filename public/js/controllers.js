@@ -250,6 +250,14 @@ angular.module('starter.controllers', [])
             $scope.getBatchRecords();
         }
 
+        function isInt(n){
+            return Number(n) === n && n % 1 === 0;
+        }
+        
+        function isFloat(n){
+            return Number(n) === n && n % 1 !== 0;
+        }
+
         $scope.kbClose = function(index){
             if(index == 1)
             {
@@ -268,6 +276,32 @@ angular.module('starter.controllers', [])
                 if($scope.Model.input == 4)
                 {
                     $scope.Model.UserCode = $scope.Model.keypad;
+                }
+                if($scope.Model.input == 5)
+                {
+                    $scope.Model.BearingTypeMaster = $scope.Model.keypad;
+                }
+                if($scope.Model.input == 6)
+                {
+                    $scope.Model.BearingMinWeight = parseFloat($scope.Model.keypad);
+                    //if(isInt($scope.Model.BearingMinWeight) == false || isFloat($scope.Model.BearingMinWeight) == false)
+                    // if(parseFloat($scope.Model.BearingMinWeight) == isNaN)
+                    //$scope.Model.BearingMinWeight = '';
+                }
+                if($scope.Model.input == 7)
+                {
+                    $scope.Model.BearingMaxWeight = parseFloat($scope.Model.keypad);
+                    // if(isInt($scope.Model.BearingMaxWeight) == false || isFloat($scope.Model.BearingMaxWeight) == false)
+                    // if(parseFloat($scope.Model.BearingMaxWeight) == isNaN)
+                    //$scope.Model.BearingMaxWeight = '';
+                }
+                if($scope.Model.input == 8)
+                {
+                    $scope.Model.UsernameMaster = $scope.Model.keypad;
+                }
+                if($scope.Model.input == 9)
+                {
+                    $scope.Model.UserCodeMaster = $scope.Model.keypad;
                 }
             }
             $scope.Model.keypad = "";
@@ -314,7 +348,48 @@ angular.module('starter.controllers', [])
             });    
             $scope.reset();
             $scope.getBatchRecords();
+            $scope.getBearingTypes();
+            $scope.getUsersData();
         });
+
+        $scope.getBearingTypes = function(){
+            $http({
+                url: '/api/getBearingTypes',
+                method: "POST",
+                data: {}
+            })
+            .then(function(response) {
+                // $scope.Model.bearingTypesMaster = [];
+                // for(var i=0;i<response.data.data.length;i++)
+                // {
+                //     $scope.Model.bearingTypesMaster.push(JSON.parse(response.data.data[i]));
+                // }
+                $scope.Model.bearingTypesMaster = response.data.data;
+            },
+            function(response) {
+
+            });
+        }
+
+        $scope.getUsersData = function(){
+            $http({
+                url: '/api/getUsers',
+                method: "POST",
+                data: {}
+            })
+            .then(function(response) {
+                // $scope.Model.usersDataMaster = [];
+                // for(var i=0;i<response.data.data.length;i++)
+                // {
+                //     //console.log(response.data.data[i]);
+                //     //$scope.Model.usersDataMaster.push(JSON.parse(response.data.data[i]));
+                // }
+                $scope.Model.usersDataMaster = response.data.data;
+            },
+            function(response) {
+                
+            });
+        }
 
         $scope.before = function(){
             //if($scope.Model.status == 1)
@@ -327,6 +402,100 @@ angular.module('starter.controllers', [])
             $scope.Model.status = 0;
             //else
             //    $scope.Model.status = 1;                
+        }
+
+        $scope.saveBearingType = function(){
+            if($scope.Model.BearingTypeMaster == undefined || $scope.Model.BearingTypeMaster.length == 0)
+            {
+                alert("Enter Bearing Type.");
+                return;
+            }
+            if($scope.Model.BearingMinWeight == undefined || $scope.Model.BearingMinWeight.length == 0)
+            {
+                alert("Enter Bearing Min. Weight");
+                return;
+            }
+            if($scope.Model.BearingMaxWeight == undefined || $scope.Model.BearingMaxWeight.length == 0)
+            {
+                alert("Enter Bearing Max. Weight");
+                return;
+            }
+
+            $http({
+                url: '/api/addbearingmaster',
+                method: "POST",
+                data: {'BearingType':$scope.Model.BearingTypeMaster,'MinWeight':$scope.Model.BearingMinWeight,'MaxWeight':$scope.Model.BearingMaxWeight}
+            })
+            .then(function(response) {
+                $scope.getBearingTypes();
+            },
+            function(response) {
+
+            });
+            
+        }
+
+        $scope.removeBearingType = function(item){
+            var result = confirm("Want to delete?");
+            if (result) {
+                $http({
+                    url: '/api/removeBearingType',
+                    method: "POST",
+                    data: {'id':item.ID}
+                })
+                .then(function(response) {
+                    $scope.getBearingTypes();
+                },
+                function(response) {
+    
+                });
+            }
+        }
+
+        $scope.removeUserItem = function(item){
+            var result = confirm("Want to delete?");
+            if (result) {
+                $http({
+                    url: '/api/removeUserItem',
+                    method: "POST",
+                    data: {'id':item.ID}
+                })
+                .then(function(response) {
+                    $scope.getUsersData();
+                },
+                function(response) {
+    
+                });
+            }
+        }
+
+        $scope.saveUsers = function(){
+            if($scope.Model.UsernameMaster == undefined || $scope.Model.UsernameMaster.length == 0)
+            {
+                alert("Enter Username");
+                return;
+            }
+            if($scope.Model.UserCodeMaster == undefined || $scope.Model.UserCodeMaster.length == 0)
+            {
+                alert("Enter Usercode");
+                return;
+            }
+
+            $http({
+                url: '/api/addusersmaster',
+                method: "POST",
+                data: {'UserName':$scope.Model.UsernameMaster,'UserCode':$scope.Model.UserCodeMaster}
+            })
+            .then(function(response) {
+                $scope.getUsersData();
+            },
+            function(response) {
+
+            });
+        }
+
+        $scope.userSelected = function(){
+            $scope.Model.UserCode = JSON.parse($scope.Model.Username).Code;
         }
 
         $scope.searchBearing = function(){
@@ -367,7 +536,12 @@ angular.module('starter.controllers', [])
         var i = 10;
         $scope.enterWeight = function(){
 
-            if($scope.Model.BearingNo == undefined || $scope.Model.BearingNo.length == 0)
+            // console.log(JSON.parse($scope.Model.BearingNo));
+            // console.log(JSON.parse($scope.Model.Username));
+            // return;
+
+
+            if($scope.Model.BearingNo == undefined)
             {
                 alert("Enter Bearing No.");
                 return;
@@ -377,7 +551,7 @@ angular.module('starter.controllers', [])
                 alert("Enter Sr. No.");
                 return;
             }
-            if($scope.Model.Username == undefined || $scope.Model.Username.length == 0)
+            if($scope.Model.Username == undefined)
             {
                 alert("Enter Username");
                 return;
@@ -398,10 +572,10 @@ angular.module('starter.controllers', [])
             //$scope.Model.cWeight = i+10;
             //i=i+10;
 
-            var obj = {'BearingNo':$scope.Model.BearingNo,
+            var obj = {'BearingNo':JSON.parse($scope.Model.BearingNo).Name,
                 'SrNo':$scope.Model.SrNo,
-                'Username':$scope.Model.Username,
-                'UserCode':$scope.Model.UserCode,
+                'Username':JSON.parse($scope.Model.Username).Name,
+                'UserCode':JSON.parse($scope.Model.Username).Code,
                 'Extra1':$scope.Model.Extra1,
                 'Extra2':$scope.Model.Extra2,
                 'Extra3':$scope.Model.Extra3,
