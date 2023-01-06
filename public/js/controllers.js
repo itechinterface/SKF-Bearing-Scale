@@ -24,6 +24,48 @@ angular.module('starter.controllers', [])
         };
     })
 
+
+    .directive("select2", function($timeout, $parse) {
+        return {
+        restrict: 'AC',
+        require: 'ngModel',
+        link: function(scope, element, attrs) {
+            console.log(attrs);
+            $timeout(function() {
+            element.select2();
+            element.select2Initialized = true;
+            });
+    
+            var refreshSelect = function() {
+            if (!element.select2Initialized) return;
+            $timeout(function() {
+                element.trigger('change');
+            });
+            };
+            
+            var recreateSelect = function () {
+            if (!element.select2Initialized) return;
+            $timeout(function() {
+                element.select2('destroy');
+                element.select2();
+            });
+            };
+    
+            scope.$watch(attrs.ngModel, refreshSelect);
+    
+            if (attrs.ngOptions) {
+            var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
+            // watch for option list change
+            scope.$watch(list, recreateSelect);
+            }
+    
+            if (attrs.ngDisabled) {
+            scope.$watch(attrs.ngDisabled, refreshSelect);
+            }
+        }
+        };
+    })
+
     .directive('exportToCsv',function(){
         return {
           restrict: 'A',
@@ -35,7 +77,7 @@ angular.module('starter.controllers', [])
                   var csvString = '';
                   for(var i=0; i<table.rows.length;i++){
                       var rowData = table.rows[i].cells;
-                      for(var j=0; j<rowData.length;j++){
+                      for(var j=0; j<rowData.length-2;j++){
                           csvString = csvString + rowData[j].innerHTML + ",";
                       }
                       csvString = csvString.substring(0,csvString.length - 1);
@@ -328,6 +370,8 @@ angular.module('starter.controllers', [])
 
         $scope.$on('$viewContentLoaded', function() {
 
+            $scope.Model.cWeight = 0;
+
             var url = $location.absUrl().split('?')[0];
             if(url.toString().indexOf('localhost') == -1)
                 $scope.Model.showAdminView = true;
@@ -428,6 +472,9 @@ angular.module('starter.controllers', [])
             })
             .then(function(response) {
                 $scope.getBearingTypes();
+                $scope.Model.BearingTypeMaster = "";
+                $scope.Model.BearingMinWeight = "";
+                $scope.Model.BearingMaxWeight = "";
             },
             function(response) {
 
@@ -470,6 +517,7 @@ angular.module('starter.controllers', [])
         }
 
         $scope.saveUsers = function(){
+
             if($scope.Model.UsernameMaster == undefined || $scope.Model.UsernameMaster.length == 0)
             {
                 alert("Enter Username");
@@ -488,6 +536,8 @@ angular.module('starter.controllers', [])
             })
             .then(function(response) {
                 $scope.getUsersData();
+                $scope.Model.UsernameMaster = "";
+                $scope.Model.UserCodeMaster = "";
             },
             function(response) {
 
@@ -495,11 +545,18 @@ angular.module('starter.controllers', [])
         }
 
         $scope.userSelected = function(){
-            $scope.Model.UserCode = JSON.parse($scope.Model.Username).Code;
+            //console.log($scope.Model.Username);
+            if(isJsonString($scope.Model.Username))
+            $scope.Model.Username = JSON.parse($scope.Model.Username);
+            $scope.Model.UserCode = $scope.Model.Username.Code;
+            // if($scope.Model.Username)
+            //     $scope.Model.UserCode = JSON.parse($scope.Model.Username).Code;
         }
 
         $scope.searchBearing = function(){
-            if($scope.Model.BearingNo == undefined || $scope.Model.BearingNo.length == 0)
+            
+
+            if($scope.Model.BearingNo == undefined)
             {
                 alert("Enter Bearing No.");
                 return;
@@ -510,8 +567,10 @@ angular.module('starter.controllers', [])
                 return;
             }
 
+            if(isJsonString($scope.Model.BearingNo))
+            $scope.Model.BearingNo = JSON.parse($scope.Model.BearingNo);
 
-            var obj = {'BearingNo':$scope.Model.BearingNo,
+            var obj = {'BearingNo':$scope.Model.BearingNo.Name,
                 'SrNo':$scope.Model.SrNo
             }
 
@@ -533,13 +592,62 @@ angular.module('starter.controllers', [])
             });
         }
 
+        $scope.selectBearing = function(item){
+
+                $scope.after();
+                setTimeout(function(){
+                    //console.log(item);
+                    for(var i=0;i<$scope.Model.bearingTypesMaster.length;i++)
+                    {
+                        if(item.BEARING_TYPE == $scope.Model.bearingTypesMaster[i].Name)
+                        {
+                            $scope.Model.BearingNo = $scope.Model.bearingTypesMaster[i];
+                            break;
+                        }
+                    }
+
+                    //console.log($scope.Model.BearingNo);
+
+                    for(var i=0;i<$scope.Model.usersDataMaster.length;i++)
+                    {
+                        if(item.EMPNAME == $scope.Model.usersDataMaster[i].Name)
+                        {
+                            $scope.Model.Username = $scope.Model.usersDataMaster[i];
+                            $scope.Model.UserCode = $scope.Model.usersDataMaster[i].Code;
+                            break;
+                        }
+                    }
+                    
+                    //console.log($scope.Model.Username);
+                    $scope.Model.SrNo = item.BEARING_NO;
+                    $scope.$apply();
+                },200);
+                
+        }
+
         var i = 10;
+
+        function isJsonString(str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        }
+
         $scope.enterWeight = function(){
 
             // console.log(JSON.parse($scope.Model.BearingNo));
             // console.log(JSON.parse($scope.Model.Username));
             // return;
+            
+            if(isJsonString($scope.Model.BearingNo))
+            $scope.Model.BearingNo = JSON.parse($scope.Model.BearingNo);
 
+            if(isJsonString($scope.Model.Username))
+            $scope.Model.Username = JSON.parse($scope.Model.Username);
+            
 
             if($scope.Model.BearingNo == undefined)
             {
@@ -569,13 +677,13 @@ angular.module('starter.controllers', [])
             $scope.Model.Extra3 = "";
         
             
-            //$scope.Model.cWeight = i+10;
-            //i=i+10;
+            $scope.Model.cWeight = i+10;
+            i=i+10;
 
-            var obj = {'BearingNo':JSON.parse($scope.Model.BearingNo).Name,
+            var obj = {'MinWt':$scope.Model.BearingNo.MinWt,'MaxWt':$scope.Model.BearingNo.MaxWt,'BearingNo':$scope.Model.BearingNo.Name,
                 'SrNo':$scope.Model.SrNo,
-                'Username':JSON.parse($scope.Model.Username).Name,
-                'UserCode':JSON.parse($scope.Model.Username).Code,
+                'Username':$scope.Model.Username.Name,
+                'UserCode':$scope.Model.Username.Code,
                 'Extra1':$scope.Model.Extra1,
                 'Extra2':$scope.Model.Extra2,
                 'Extra3':$scope.Model.Extra3,
@@ -599,7 +707,7 @@ angular.module('starter.controllers', [])
                 else
                 $scope.Model.status = 1;  
                 //$scope.after();
-                //$scope.Model.SrNo = "";
+                $scope.Model.SrNo = "";
             },
             function(response) {
 

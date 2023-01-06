@@ -162,8 +162,14 @@
 
     <div class="row" ng-hide="Model.kbView">
         <div ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)" class="col-md-6">
-            <div class="box-header" style="background-color: black;text-align: right;">
-                <h3 class="box-title" style="font-size: xx-large;color: white;background-color:'black'">{{ Model.cWeight }} kg</h3>
+            <div ng-if="!Model.BearingNo" class="box-header" style="background-color: black;text-align: right;">
+                <h3 class="box-title" style="font-size:50px;color: white;background-color:'black'">{{ Model.cWeight }} kg</h3>
+            </div>
+            <div ng-if="Model.cWeight >= Model.BearingNo.MinWt && Model.cWeight <= Model.BearingNo.MaxWt" class="box-header" style="background-color: green;text-align: right;">
+                <h3 class="box-title" style="font-size:50px;color: white;background-color:'black'">{{ Model.cWeight }} kg</h3>
+            </div>
+            <div ng-if="Model.cWeight < Model.BearingNo.MinWt || Model.cWeight > Model.BearingNo.MaxWt" class="box-header" style="background-color: red;text-align: right;">
+                <h3 class="box-title" style="font-size:50px;color: white;background-color:'black'">{{ Model.cWeight }} kg</h3>
             </div>
         </div>
         <div ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)" class="col-md-6">
@@ -265,9 +271,10 @@
                         <div>
                             <div class="form-group">
                                 <label>BEARING TYPE</label>
-                                <select class="form-control" ng-model="Model.BearingNo">
+                                <select ng-model="Model.BearingNo" class="form-control" ng-options="item.Name for item in Model.bearingTypesMaster" style="font-weight:bold"></select>
+                                <!-- <select class="form-control" ng-model="Model.BearingNo">
                                     <option ng-repeat="BearingNo in Model.bearingTypesMaster track by $index" value="{{BearingNo}}">{{BearingNo.Name}}</option>
-                                </select>
+                                </select> -->
                                 <!-- <input ng-focus="Model.input = 1;Model.keypad=Model.BearingNo;Model.kbView = true" ng-model="Model.BearingNo" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder=""> -->
                             </div>
                             <div class="form-group">
@@ -276,9 +283,10 @@
                             </div>
                             <div class="form-group">
                                 <label>USER NAME</label>
-                                <select class="form-control" ng-model="Model.Username">
-                                    <option ng-selected="userSelected()" ng-repeat="item in Model.usersDataMaster" value="{{item}}">{{item.Name}}</option>
-                                </select>
+                                <select ng-model="Model.Username" class="form-control" ng-options="item.Name for item in Model.usersDataMaster" style="font-weight:bold" ng-change="userSelected()"></select>
+                                <!-- <select class="form-control" ng-model="Model.Username" ng-change="userSelected()">
+                                    <option ng-repeat="item in Model.usersDataMaster" value="{{item}}">{{item.Name}}</option>
+                                </select> -->
                                 <!-- <input ng-focus="Model.input = 3;Model.keypad=Model.Username;Model.kbView = true" ng-model="Model.Username" type="text" class="form-control" style="font-size:large;font-weight:bold" placeholder=""> -->
                             </div>
                             <div class="form-group">
@@ -361,11 +369,13 @@
                             <table class="table">
                                 <thead style="position: sticky;top: 0;background-color: lightgrey;color: black;font-size: larger;">
                                     <tr>
-                                        <th style="width:5%">BEARING NO.</th>
+                                        <th style="width:5%">BEARING TYPE</th>
                                         <th style="width:10%;text-align: center;">SR.NO</th>
-                                        <th style="width:10%;text-align: center;">BEFORE WT.</th>
-                                        <th style="width:10%;text-align: center;">AFTER WT.</th>
-                                        <th style="width:10%;text-align: center;">RESULT WT.</th>
+                                        <th style="width:10%;text-align: center;"> Before Greasing Weight</th>
+                                        <th style="width:10%;text-align: center;">After Greasing Weight</th>
+                                        <th style="width:10%;text-align: center;">Grease Amount</th>
+                                        <th style="width:10%;text-align: center;">Status</th>
+                                        <th style="width:10%;text-align: center;">Date Time</th>
                                         <th style="width:10%;text-align: center;">USER NAME</th>
                                         <th style="width:10%;text-align: center;">USER CODE</th>
                                         <th ng-hide="Model.showAdminView" style="width:10%;text-align: center;">PRINT</th>
@@ -374,10 +384,12 @@
                                 </thead>
                                 <tr ng-repeat="item in Model.batchRecords track by $index">
                                     <td style="width:10%;text-align: center;">{{item.BEARING_TYPE}}</td>
-                                    <td style="width:10%;text-align: center;">{{item.BEARING_NO}}</td>
+                                    <td ng-click="selectBearing(item)" style="width:10%;text-align: center;">{{item.BEARING_NO}}</td>
                                     <td style="width:10%;text-align: center;">{{item.BEFORE_WEIGHT}}</td>
                                     <td style="width:10%;text-align: center;">{{item.AFTER_WEIGHT}}</td>
                                     <td style="width:10%;text-align: center;">{{item.RESULT_WEIGHT}}</td>
+                                    <td style="width:10%;text-align: center;">{{item.EX1 == 1 ? 'OK':'NOT OK'}}</td>
+                                    <td style="width:10%;text-align: center;">{{item.EX2}}</td>
                                     <td style="width:10%;text-align: center;">{{item.EMPNAME}}</td>
                                     <td style="width:10%;text-align: center;">{{item.EMPCODE}}</td>
                                     <td ng-hide="Model.showAdminView" style="width:10%;text-align: center;"><button ng-click="duplicate(item)" class="btn btn-primary" style="width:100%">PRINT</button></td>

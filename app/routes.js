@@ -255,6 +255,11 @@ module.exports = function(app,io) {
 		var Status = req.body.Status;
 		var BeforeWt = req.body.BeforeWt;
 		var AfterWt = req.body.AfterWt;
+		var MinWt = req.body.MinWt;
+		var MaxWt = req.body.MaxWt;
+
+		// console.log(MinWt);
+		// console.log(MaxWt);
 		
 		db.all("SELECT * FROM BatchData where BEARING_TYPE = '"+BearingNo+"' and BEARING_NO = '"+SrNo+"'", function(err, rows) {
 			console.log(rows);
@@ -265,7 +270,11 @@ module.exports = function(app,io) {
 				{
 					var ResultWt = (parseFloat(BeforeWt) - parseFloat(rows[0].AFTER_WEIGHT)).toFixed(3);
 					var DT = getDateTime();
-					var query = "Update BatchData set BEFORE_WEIGHT = "+BeforeWt+",BEFORE_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '',EX2 = '"+DT+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
+					var wtOk = "0";
+					if(ResultWt >= parseFloat(MinWt) && ResultWt <=parseFloat(MaxWt))
+					wtOk = "1";
+
+					var query = "Update BatchData set BEFORE_WEIGHT = "+BeforeWt+",BEFORE_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '"+wtOk+"',EX2 = '"+DT+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
 					var stmt = db.prepare(query);
 					console.log(query);
 					stmt.run();
@@ -292,7 +301,10 @@ module.exports = function(app,io) {
 
 					var ResultWt = (parseFloat(AfterWt) - parseFloat(rows[0].BEFORE_WEIGHT)).toFixed(3);
 					var DT = getDateTime();
-					var query = "Update BatchData set AFTER_WEIGHT = "+AfterWt+",AFTER_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '',EX2 = '"+DT+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
+					var wtOk = "0";
+					if(ResultWt >= parseFloat(MinWt) && ResultWt <=parseFloat(MaxWt))
+					wtOk = "1";
+					var query = "Update BatchData set AFTER_WEIGHT = "+AfterWt+",AFTER_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '"+wtOk+"',EX2 = '"+DT+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
 					console.log(query);
 					var stmt = db.prepare(query);
 					stmt.run();
@@ -321,8 +333,9 @@ module.exports = function(app,io) {
 				if(Status == 1)
 				{
 					var DT = getDateTime();
+					var wtOk = "-1";
 					var stmt = db.prepare("INSERT INTO BatchData('BEARING_TYPE','BEARING_NO','BEFORE_WEIGHT','BEFORE_DATETIME','EMPNAME','EMPCODE','EX1','EX2','EX3') VALUES (?,?,?,?,?,?,?,?,?)");
-					stmt.run(BearingNo,SrNo,BeforeWt,DT,Username,UserCode,'',DT,Date.now());
+					stmt.run(BearingNo,SrNo,BeforeWt,DT,Username,UserCode,wtOk,DT,Date.now());
 					stmt.finalize();
 					// var label = "^XA^PW400^LL400^LS0"+
 					// "^FT25,50^A0N,26,26^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
@@ -345,9 +358,12 @@ module.exports = function(app,io) {
 				else{
 
 					var ResultWt = (parseFloat(AfterWt) - parseFloat(BeforeWt)).toFixed(3);
+					var wtOk = "0";
+					if(ResultWt >= parseFloat(MinWt) && ResultWt <=parseFloat(MaxWt))
+					wtOk = "1";
 					var DT = getDateTime();
 					var stmt = db.prepare("INSERT INTO BatchData('BEARING_TYPE','BEARING_NO','AFTER_WEIGHT','AFTER_DATETIME','RESULT_WEIGHT','RESULT_DATETIME','EMPNAME','EMPCODE','EX1','EX2','EX3') VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-					stmt.run(BearingNo,SrNo,AfterWt,DT,ResultWt,DT,Username,UserCode,'',DT,Date.now());
+					stmt.run(BearingNo,SrNo,AfterWt,DT,ResultWt,DT,Username,UserCode,wtOk,DT,Date.now());
 					stmt.finalize();
 					var label = "^XA^PW400^LL400^LS0"+
 					"^FT25,50^A0N,26,26^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
@@ -373,8 +389,7 @@ module.exports = function(app,io) {
 
 	app.post('/api/duplicateprint',function (req,res) {
 		var item = JSON.parse(req.body.item);
-		console.log(item);
-
+		//console.log(item);
 		var label = "^XA^PW400^LL400^LS0"+
 		"^FT25,50^A0N,26,26^FH\^CI28^FDBearing No. : "+item.BEARING_TYPE+"^FS^CI27"+
 		"^FT25,100^A0N,26,26^FH\^CI28^FDSr.No. :  "+item.BEARING_NO+"^FS^CI27"+
