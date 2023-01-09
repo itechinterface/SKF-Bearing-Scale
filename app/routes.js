@@ -271,7 +271,7 @@ module.exports = function(app,io) {
 					var ResultWt = (parseFloat(BeforeWt) - parseFloat(rows[0].AFTER_WEIGHT)).toFixed(3);
 					var DT = getDateTime();
 					var wtOk = "0";
-					if(ResultWt >= parseFloat(MinWt) && ResultWt <=parseFloat(MaxWt))
+					if(parseFloat(rows[0].AFTER_WEIGHT) >= parseFloat(MinWt) && parseFloat(rows[0].AFTER_WEIGHT) <=parseFloat(MaxWt))
 					wtOk = "1";
 
 					var query = "Update BatchData set BEFORE_WEIGHT = "+BeforeWt+",BEFORE_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '"+wtOk+"',EX2 = '"+DT+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
@@ -302,7 +302,7 @@ module.exports = function(app,io) {
 					var ResultWt = (parseFloat(AfterWt) - parseFloat(rows[0].BEFORE_WEIGHT)).toFixed(3);
 					var DT = getDateTime();
 					var wtOk = "0";
-					if(ResultWt >= parseFloat(MinWt) && ResultWt <=parseFloat(MaxWt))
+					if(parseFloat(AfterWt) >= parseFloat(MinWt) && parseFloat(AfterWt) <=parseFloat(MaxWt))
 					wtOk = "1";
 					var query = "Update BatchData set AFTER_WEIGHT = "+AfterWt+",AFTER_DATETIME = '"+DT+"',RESULT_WEIGHT = "+ResultWt+",RESULT_DATETIME = '"+DT+"',EMPNAME = '"+Username+"',EMPCODE = '"+UserCode+"',EX1 = '"+wtOk+"',EX2 = '"+DT+"',EX3 = '"+Date.now()+"' where BEARING_TYPE = '"+rows[0].BEARING_TYPE+"' and BEARING_NO = '"+rows[0].BEARING_NO+"'";
 					console.log(query);
@@ -359,7 +359,7 @@ module.exports = function(app,io) {
 
 					var ResultWt = (parseFloat(AfterWt) - parseFloat(BeforeWt)).toFixed(3);
 					var wtOk = "0";
-					if(ResultWt >= parseFloat(MinWt) && ResultWt <=parseFloat(MaxWt))
+					if(parseFloat(AfterWt) >= parseFloat(MinWt) && parseFloat(AfterWt) <=parseFloat(MaxWt))
 					wtOk = "1";
 					var DT = getDateTime();
 					var stmt = db.prepare("INSERT INTO BatchData('BEARING_TYPE','BEARING_NO','AFTER_WEIGHT','AFTER_DATETIME','RESULT_WEIGHT','RESULT_DATETIME','EMPNAME','EMPCODE','EX1','EX2','EX3') VALUES (?,?,?,?,?,?,?,?,?,?,?)");
