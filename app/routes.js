@@ -280,13 +280,13 @@ module.exports = function(app,io) {
 					stmt.run();
 					stmt.finalize();
 					var label = "^XA^PW400^LL400^LS0"+
-					"^FT25,50^A0N,26,26^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
-					"^FT25,100^A0N,26,26^FH\^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
-					"^FT25,150^A0N,26,26^FH\^CI28^FDBefore Weight :  "+parseFloat(BeforeWt).toFixed(3)+" Kg.^FS^CI27"+
-					"^FT25,200^A0N,26,26^FH\^CI28^FDAfter Weight :  "+parseFloat(rows[0].AFTER_WEIGHT).toFixed(3)+" Kg.^FS^CI27"+
-					"^FT25,250^A0N,26,26^FH\^CI28^FDResult  Difference :  "+parseFloat(ResultWt).toFixed(3)+" Kg.^FS^CI27"+
-					"^FT25,300^A0N,26,26^FH\^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
-					"^FT25,350^A0N,26,26^FH\^CI28^FDDate & Time : "+DT+"^FS^CI27"+
+					"^FT25,50^A0N,26,26^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
+					"^FT25,100^A0N,26,26^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
+					"^FT25,150^A0N,26,26^CI28^FDBefore Weight :  "+parseFloat(BeforeWt).toFixed(3)+" Kg.^FS^CI27"+
+					"^FT25,200^A0N,26,26^CI28^FDAfter Weight :  "+parseFloat(rows[0].AFTER_WEIGHT).toFixed(3)+" Kg.^FS^CI27"+
+					"^FT25,250^A0N,26,26^CI28^FDResult  Difference :  "+parseFloat(ResultWt).toFixed(3)+" Kg.^FS^CI27"+
+					"^FT25,300^A0N,26,26^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
+					"^FT25,350^A0N,26,26^CI28^FDDate & Time : "+DT+"^FS^CI27"+
 					"^PQ1,0,1,Y"+
 					"^XZ";
 					var printer_ = initPrinter();
@@ -311,13 +311,13 @@ module.exports = function(app,io) {
 					stmt.finalize();
 
 					var label = "^XA^PW400^LL400^LS0"+
-					"^FT25,50^A0N,26,26^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
-					"^FT25,100^A0N,26,26^FH\^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
-					"^FT25,150^A0N,26,26^FH\^CI28^FDBefore Weight :  "+parseFloat(rows[0].BEFORE_WEIGHT).toFixed(3)+" Kg.^FS^CI27"+
-					"^FT25,200^A0N,26,26^FH\^CI28^FDAfter Weight :  "+parseFloat(AfterWt).toFixed(3)+" Kg.^FS^CI27"+
-					"^FT25,250^A0N,26,26^FH\^CI28^FDResult  Difference :  "+parseFloat(ResultWt).toFixed(3)+" Kg.^FS^CI27"+
-					"^FT25,300^A0N,26,26^FH\^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
-					"^FT25,350^A0N,26,26^FH\^CI28^FDDate & Time : "+DT+"^FS^CI27"+
+					"^FT25,50^A0N,26,26^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
+					"^FT25,100^A0N,26,26^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
+					"^FT25,150^A0N,26,26^CI28^FDBefore Weight :  "+parseFloat(rows[0].BEFORE_WEIGHT).toFixed(3)+" Kg.^FS^CI27"+
+					"^FT25,200^A0N,26,26^CI28^FDAfter Weight :  "+parseFloat(AfterWt).toFixed(3)+" Kg.^FS^CI27"+
+					"^FT25,250^A0N,26,26^CI28^FDResult  Difference :  "+parseFloat(ResultWt).toFixed(3)+" Kg.^FS^CI27"+
+					"^FT25,300^A0N,26,26^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
+					"^FT25,350^A0N,26,26^CI28^FDDate & Time : "+DT+"^FS^CI27"+
 					"^PQ1,0,1,Y"+
 					"^XZ";
 					var printer_ = initPrinter();
@@ -366,13 +366,13 @@ module.exports = function(app,io) {
 					stmt.run(BearingNo,SrNo,AfterWt,DT,ResultWt,DT,Username,UserCode,wtOk,DT,Date.now());
 					stmt.finalize();
 					var label = "^XA^PW400^LL400^LS0"+
-					"^FT25,50^A0N,26,26^FH\^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
-					"^FT25,100^A0N,26,26^FH\^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
-					"^FT25,150^A0N,26,26^FH\^CI28^FDBefore Weight :   ^FS^CI27"+
-					"^FT25,200^A0N,26,26^FH\^CI28^FDAfter Weight : "+parseFloat(BeforeWt).toFixed(3)+" Kg.^FS^CI27"+
-					"^FT25,250^A0N,26,26^FH\^CI28^FDResult  Difference : ^FS^CI27"+
-					"^FT25,300^A0N,26,26^FH\^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
-					"^FT25,350^A0N,26,26^FH\^CI28^FDDate & Time : "+DT+"^FS^CI27"+
+					"^FT25,50^A0N,26,26^CI28^FDBearing No. : "+BearingNo+"^FS^CI27"+
+					"^FT25,100^A0N,26,26^CI28^FDSr.No. :  "+SrNo+"^FS^CI27"+
+					"^FT25,150^A0N,26,26^CI28^FDBefore Weight :   ^FS^CI27"+
+					"^FT25,200^A0N,26,26^CI28^FDAfter Weight : "+parseFloat(BeforeWt).toFixed(3)+" Kg.^FS^CI27"+
+					"^FT25,250^A0N,26,26^CI28^FDResult  Difference : ^FS^CI27"+
+					"^FT25,300^A0N,26,26^CI28^FDMeasured  By : "+Username+", "+UserCode+"^FS^CI27"+
+					"^FT25,350^A0N,26,26^CI28^FDDate & Time : "+DT+"^FS^CI27"+
 					"^PQ1,0,1,Y"+
 					"^XZ";
 					var printer_ = initPrinter();
@@ -391,13 +391,13 @@ module.exports = function(app,io) {
 		var item = JSON.parse(req.body.item);
 		//console.log(item);
 		var label = "^XA^PW400^LL400^LS0"+
-		"^FT25,50^A0N,26,26^FH\^CI28^FDBearing No. : "+item.BEARING_TYPE+"^FS^CI27"+
-		"^FT25,100^A0N,26,26^FH\^CI28^FDSr.No. :  "+item.BEARING_NO+"^FS^CI27"+
-		"^FT25,150^A0N,26,26^FH\^CI28^FDBefore Weight :  "+parseFloat(item.BEFORE_WEIGHT).toFixed(3)+" Kg.^FS^CI27"+
-		"^FT25,200^A0N,26,26^FH\^CI28^FDAfter Weight : "+parseFloat(item.AFTER_WEIGHT).toFixed(3)+"^ Kg.^FS^CI27"+
-		"^FT25,250^A0N,26,26^FH\^CI28^FDResult  Difference : "+parseFloat(item.RESULT_WEIGHT).toFixed(3)+" Kg.^FS^CI27"+
-		"^FT25,300^A0N,26,26^FH\^CI28^FDMeasured  By : "+item.EMPNAME+", "+item.EMPCODE+"^FS^CI27"+
-		"^FT25,350^A0N,26,26^FH\^CI28^FDDate & Time : "+item.EX2+"^FS^CI27"+
+		"^FT25,50^A0N,26,26^CI28^FDBearing No. : "+item.BEARING_TYPE+"^FS^CI27"+
+		"^FT25,100^A0N,26,26^CI28^FDSr.No. :  "+item.BEARING_NO+"^FS^CI27"+
+		"^FT25,150^A0N,26,26^CI28^FDBefore Weight :  "+parseFloat(item.BEFORE_WEIGHT).toFixed(3)+" Kg.^FS^CI27"+
+		"^FT25,200^A0N,26,26^CI28^FDAfter Weight : "+parseFloat(item.AFTER_WEIGHT).toFixed(3)+"^ Kg.^FS^CI27"+
+		"^FT25,250^A0N,26,26^CI28^FDResult  Difference : "+parseFloat(item.RESULT_WEIGHT).toFixed(3)+" Kg.^FS^CI27"+
+		"^FT25,300^A0N,26,26^CI28^FDMeasured  By : "+item.EMPNAME+", "+item.EMPCODE+"^FS^CI27"+
+		"^FT25,350^A0N,26,26^CI28^FDDate & Time : "+item.EX2+"^FS^CI27"+
 		"^PQ1,0,1,Y"+
 		"^XZ";
 		console.log(label);
