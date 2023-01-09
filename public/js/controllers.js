@@ -677,8 +677,8 @@ angular.module('starter.controllers', [])
             $scope.Model.Extra3 = "";
         
             
-            $scope.Model.cWeight = i+10;
-            i=i+10;
+            //$scope.Model.cWeight = i+10;
+            //i=i+10;
 
             var obj = {'MinWt':$scope.Model.BearingNo.MinWt,'MaxWt':$scope.Model.BearingNo.MaxWt,'BearingNo':$scope.Model.BearingNo.Name,
                 'SrNo':$scope.Model.SrNo,
