@@ -715,12 +715,16 @@ angular.module('starter.controllers', [])
             })
             .then(function(response) {
                 $scope.getBatchRecords();
+
+                if($scope.Model.status == 0)
+                $scope.Model.SrNo = "";
+
                 if($scope.Model.status == 1)
                 $scope.Model.status = 0;
                 else
                 $scope.Model.status = 1;  
                 //$scope.after();
-                $scope.Model.SrNo = "";
+                
             },
             function(response) {
 

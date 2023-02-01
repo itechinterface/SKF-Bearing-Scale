@@ -162,14 +162,15 @@
 
     <div class="row" ng-hide="Model.kbView">
         <div ng-hide="Model.showAdminView || (Model.bearingMasterShow || Model.userMasterShow)" class="col-md-6">
+            
             <div ng-if="Model.status == 1 && !Model.BearingNo" class="box-header" style="background-color: black;text-align: right;">
                 <h3 class="box-title" style="font-size:50px;color: white;background-color:'black'">{{ Model.cWeight }} kg</h3>
             </div>
 
             <!-- Model.status == 1 &&  -->
-            <div ng-if="Model.BearingNo" class="box-header" style="background-color: black;text-align: right;">
+            <!-- <div ng-if="Model.BearingNo" class="box-header" style="background-color: black;text-align: right;">
                 <h3 class="box-title" style="font-size:50px;color: white;background-color:'black'">{{ Model.cWeight }} kg</h3>
-            </div>
+            </div> -->
             <!-- Model.status == 0 &&  -->
             <div ng-if="Model.cWeight >= Model.BearingNo.MinWt && Model.cWeight <= Model.BearingNo.MaxWt" class="box-header" style="background-color: green;text-align: right;">
                 <h3 class="box-title" style="font-size:50px;color: white;background-color:'black'">{{ Model.cWeight }} kg</h3>
