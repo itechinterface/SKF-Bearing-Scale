@@ -435,6 +435,19 @@ angular.module('starter.controllers', [])
             });
         }
 
+        $scope.anydesk = function(){
+            $http({
+                url: '/api/anydesk',
+                method: "POST"
+            })
+            .then(function(response) {
+                
+            },
+            function(response) {
+
+            });
+        }
+        
         $scope.before = function(){
             //if($scope.Model.status == 1)
             //    $scope.Model.status = 0;
